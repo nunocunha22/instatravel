@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './home';
 import NavBar from './navbar';
 import Dashbaord from './dashboard';
@@ -41,75 +41,71 @@ function App(props) {
 
   return (
     <>
-      <Router>
+      <BrowserRouter>
         <div>
           <Routes>
 
-            <Route exact path="/accounts/emailsignup/">
-              <EmailSignUp isAuth={isAuth} />
+            <Route exact path="/accounts/emailsignup/" element={<EmailSignUp isAuth={isAuth} />}/>
+
+{/*Login & Home*/}
+            <Route exact path="/login" element={<Login isAuth={isAuth} />}/>
+            <Route exact path="/" element={<Home isAuth={isAuth} />} >
+            <Route path="/" element= {{navbar}}/>
+            </Route>
+              
+{/*Settings Edit*/}  
+            <Route exact path="/accounts/edit/" element={<Settings isAuth={isAuth} />}  >
+            <Route exact path="/accounts/edit/" element={{navbar}}/>
+            </Route> 
+
+{/*Settings Pass Change*/}            
+            <Route exact path="/accounts/password/change" element={<Settings isAuth={isAuth} />} >
+            <Route exact path="/accounts/password/change" element={{navbar}}/>
             </Route>
 
-            <Route exact path="/login">
-              <Login isAuth={isAuth} />
-            </Route>
-            <Route exact path="/"  >
-              {navbar}
-              <Home isAuth={isAuth} />
-              
-            </Route>
-            <Route exact path="/accounts/edit/"  >
-              {navbar}
-              <Settings isAuth={isAuth} />
-           
-            </Route>
-            <Route exact path="/accounts/password/change"  >
-              {navbar}
-              <Settings isAuth={isAuth} />
-            </Route>
-            <Route exact path="/settings/help" >
-              {navbar}
-              <Settings isAuth={isAuth} />
+{/*Settings Help*/} 
+            <Route exact path="/settings/help" element={<Settings isAuth={isAuth} /> } >
+             <Route exact path="/settings/help" element={{navbar}}/>              
             </Route>
 
-            <Route exact path="/home">
-              {navbar}
-              <Home />
+{/*Home*/} 
+            <Route exact path="/home" element= {<Home />}>
+            <Route exact path="/home" element= { {navbar}}/>
+             </Route>
+                            
+{/*Create*/}   
+            <Route exact path="/create" element={<Create />}>  
+            <Route exact path="/create" element={{navbar}}/>
+            </Route>              
+
+{/*Create Post*/}
+            <Route exact path="/create/__post__" element={ <Create />}>
+            <Route exact path="/create/__post__" element={{navbar}}/>
+            </Route> 
+             
+{/*Create Story*/}        
+            <Route exact path="/create/__story__" element ={<Create />}>
+            <Route exact path="/create/__story__" element ={{navbar}}/>
+            </Route>   
               
-            </Route>
-        
-            <Route exact path="/create">
-              {navbar}
-              <Create />
-              
-            </Route>
-            <Route exact path="/create/__post__">
-              {navbar}
-              <Create />
-            </Route>
-            <Route exact path="/create/__story__">
-              {navbar}
-              <Create />
-            </Route>
+{/*PostViewer*/}          
             <Route exact path={'/p/:url'} render={(props) => <>{navbar}<PostViewer {...props} /></>} />
-            <Route exact path={"/" + username + "/"} >
-              {navbar}
-              <Dashbaord  />
-              
+            <Route exact path={"/" + username + "/"} element={<Dashbaord  />}>
+            <Route exact path={"/" + username + "/"} element={{navbar}}/>
             </Route>
-            <Route exact path={"/" + username + "/__saved__"}>
-              {navbar}
-              <Dashbaord  />
-              
+
+            <Route exact path={"/" + username + "/__saved__"} element={ <Dashbaord  />}>
+            <Route exact path={"/" + username + "/__saved__"} element={{navbar}}/>
             </Route>         
           
-            <Route exact path={'/accounts/verify/email/'}>
-              <EmailVerification />
+            <Route exact path={'/accounts/verify/email/'} element= { <EmailVerification />}>
             </Route>
 
-            <Route exact path="/explore/people/">
-              {navbar}
-              <ExplorePeople isAuth={isAuth} />
-            </Route>
+            <Route exact path="/explore/people/" element={<ExplorePeople isAuth={isAuth} />}>
+            <Route exact path="/explore/people/" element={{navbar}}/>
+             </Route> 
+              
+            
             <Route exact path="/accounts/password/reset" component={ResetPassword} />
             <Route exact path="/resetpassword/verify/" render={(props) => <> <VerifyCode type="resetpassword_verify" {...props} /></>} />
             <Route exact path="/resetpassword/verify/:ucode" render={(props) => <> <VerifyCode type="resetpassword_verify" {...props} /></>} />
@@ -119,7 +115,7 @@ function App(props) {
             
           </Routes>
         </div>
-      </Router>
+      </BrowserRouter>
 
 
     </>

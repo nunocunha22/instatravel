@@ -2,9 +2,9 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import PostList from './Components/PostList';
-import Suggestion from './Components/Suggestions';
-import Toast from './Components/Toast';
+import PostList from './components/PostList';
+import Suggestion from './components/Suggestions';
+import Toast from './components/Toast';
 import './Styles/home.css';
 import HOST_URL from './proxy';
 

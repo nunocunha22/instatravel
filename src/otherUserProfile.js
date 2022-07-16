@@ -3,12 +3,12 @@ import Cookies from "js-cookie";
 import React from "react";
 
 import {
-    BrowserRouter as Router,
+    BrowserRouter,
     Route,
     Link,
     Routes
 } from "react-router-dom";
-import DashboardPosts from "./Components/DashboardPost";
+import DashboardPosts from "./components/DashboardPost";
 import UserNotLogin from "./notLogin";
 import HOST_URL from "./proxy";
 
@@ -199,7 +199,7 @@ class OtherUserProfile extends React.Component {
                 {/* End Divider */}
                 {/* Dashboard Menu Section */}
 
-                <Router>
+                <BrowserRouter>
                     <div className="main-container-dashboard-menu">
 
                         <div className="current-user-post dashboard-sub-menu" >
@@ -230,7 +230,7 @@ class OtherUserProfile extends React.Component {
 
                     </div>
 
-                </Router>
+                </BrowserRouter>
 
                 {/*End Section  */}
 

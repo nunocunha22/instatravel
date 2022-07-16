@@ -1,9 +1,9 @@
 import React from "react";
-import {BrowserRouter as Router,Route, Routes,Navigate } from "react-router-dom";
-import ChangePassword from "./Components/ChangePassword";
-import EditProfile from "./Components/EditProfile";
-import SettingHelp from "./Components/SettingHelp";
-import SettingMenu from "./Components/SettingMenu";
+import {BrowserRouter,Route, Routes,Navigate } from "react-router-dom";
+import ChangePassword from "./components/ChangePassword";
+import EditProfile from "./components/EditProfile";
+import SettingHelp from "./components/SettingHelp";
+import SettingMenu from "./components/SettingMenu";
 import './Styles/settings.css';
 
 class Settings extends React.Component{
@@ -20,7 +20,7 @@ class Settings extends React.Component{
         return <>
         
         <div className="settings-container">
-           <Router>
+           <BrowserRouter>
            <section className="settings-menu-section">
                 <SettingMenu/>
             </section>
@@ -33,7 +33,7 @@ class Settings extends React.Component{
                 </Routes>
             </section>
 
-           </Router>
+           </BrowserRouter>
         </div>
 
 

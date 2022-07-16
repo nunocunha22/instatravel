@@ -1,7 +1,7 @@
 import axios from "axios";
 import React from "react";
 import { Navigate } from "react-router-dom";
-import PeopleList from "./Components/PeopleList";
+import PeopleList from "./components/PeopleList";
 import HOST_URL from "./proxy";
 import Cookies from "js-cookie";
 function FooterRender(params) {

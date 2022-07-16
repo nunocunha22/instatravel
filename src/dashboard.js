@@ -1,12 +1,12 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import './Styles/dashboard.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
 import HOST_URL from "./proxy";
 import Cookies from 'js-cookie'
 import baseUrl from './proxy'
-import DashboardPosts from "./Components/DashboardPost";
+import DashboardPosts from "./components/DashboardPost";
 
 
 
@@ -183,7 +183,7 @@ class Dashbaord extends React.Component {
 
         return <>
 
-            <Router>
+            <BrowserRouter>
                 <Routes>
                     <Route exact path={'accounts/edit'}>
                     </Route>
@@ -249,7 +249,7 @@ class Dashbaord extends React.Component {
                     {/* Dashboard Menu Section */}
 
 
-                    <Router>
+                    <BrowserRouter>
 
 
                         <div className="main-container-dashboard-menu">
@@ -289,7 +289,7 @@ class Dashbaord extends React.Component {
 
                         </div>
 
-                    </Router>
+                    </BrowserRouter>
 
                     {/*End Section  */}
 
@@ -297,7 +297,7 @@ class Dashbaord extends React.Component {
 
 
 
-            </Router>
+            </BrowserRouter>
         </>
     }
 

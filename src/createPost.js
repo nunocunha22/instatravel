@@ -1,7 +1,7 @@
 
 import React from "react";
-import { Route,BrowserRouter as Router, Switch } from "react-router-dom";
-import CreatePost from "./Components/CreatePost";
+import { Route,BrowserRouter, Routes } from "react-router-dom";
+import CreatePost from "./components/CreatePost";
 
 
 class Create extends React.Component {
@@ -11,10 +11,10 @@ class Create extends React.Component {
 
     render() {
         return <>
-            <Router>
+            <BrowserRouter>
             <Route exact path="/create/__post__" component={CreatePost} />
             <Route exact path="/create/" component={CreatePost} />
-            </Router>
+            </BrowserRouter>
         </>
     }
 

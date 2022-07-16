@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import './Styles/postViewer.css';
 import axios from "axios";
 import HOST_URL from "./proxy";
-import PostFooter from "./Components/PostFooter";
+import PostFooter from "./components/PostFooter";
 import Cookies from "js-cookie";
 import helper from "./helper";
 

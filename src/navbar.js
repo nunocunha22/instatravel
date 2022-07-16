@@ -1,15 +1,15 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import LoginAndSignup from './Components/LoginAndSignUp';
-import InstaMenu from './Components/Menu';
+import LoginAndSignup from './components/LoginAndSignUp';
+import InstaMenu from './components/Menu';
 import './Styles/navbar.css';
 
 
 class NavBar extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
+    //console.log(props);
     this.state = {
       isClickedProfile: false
     }
