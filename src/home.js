@@ -34,7 +34,7 @@ function Home(props) {
  
 
   
-    document.getElementsByTagName("title")[0].innerHTML = "Instagram";
+    document.getElementsByTagName("title")[0].innerHTML = "InstaTravel";
 
     const handlleScroll = useCallback(() => {
         const bottom = Math.ceil(window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight

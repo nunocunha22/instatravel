@@ -1,4 +1,4 @@
-.instagram-navbar-menu-container{
+.instaTravel-navbar-menu-container{
     position: sticky;
     background-color: white;
     border: 1px solid rgba(224, 222, 222,0.3);
@@ -47,13 +47,13 @@ menu{
     height: fit-content;
 }
 
-.instagram-navbar-menu-container>menu{
+.instaTravel-navbar-menu-container>menu{
     position: relative;
     margin: 0;
     padding: 0;
 }
 
-.instagram-navbar-menu-container>menu>ul>li{
+.instaTravel-navbar-menu-container>menu>ul>li{
     list-style: none;
     display: flex;
     justify-content: space-between;
@@ -67,13 +67,13 @@ menu{
     user-select: none;
 
 }
-.instagram-navbar-menu-container>menu>ul>li i{
+.instaTravel-navbar-menu-container>menu>ul>li i{
     font-size: 1.2em;
     color: rgb(0, 0, 0);
     padding: 5px;
     transition: all 0.3s ease-in-out;
 }
-.instagram-navbar-menu-container>menu>ul>li button{
+.instaTravel-navbar-menu-container>menu>ul>li button{
     background-color: rgba(8, 127, 196, 0.8);
     color: white;
     border:none;
@@ -175,11 +175,11 @@ menu{
  /* End Search Section */
 /* /*  */
 @media screen and (max-width: 600px){
-    .instagram-navbar-menu-container{
+    .instaTravel-navbar-menu-container{
         grid-template-columns: auto auto auto;
         transition: all 1.5s ease-in-out; 
     }
-    .instagram-navbar-menu-container>menu>ul>li{
+    .instaTravel-navbar-menu-container>menu>ul>li{
         position: relative;
          display: flex; 
          align-items: center;
@@ -195,10 +195,10 @@ menu{
      .search-people{
          display: none;
      }
-     .instagram-navbar-menu-container>menu>ul>li{
+     .instaTravel-navbar-menu-container>menu>ul>li{
          padding: 2px;
      }
-     .instagram-navbar-menu-container>menu>ul>li i{
+     .instaTravel   -navbar-menu-container>menu>ul>li i{
          padding: 0;
      }
      .title-section>h1>a{

@@ -57,7 +57,7 @@ class NavBar extends React.Component {
   render() {
 
     return <>
-      <nav className="instagram-navbar-menu-container" onClick={this.close}>
+      <nav className="instaTravel-navbar-menu-container" onClick={this.close}>
         {/* Title */}
         <section className="title-section">
           <h1><Link to="/">InstaTravel</Link></h1>

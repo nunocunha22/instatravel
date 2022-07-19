@@ -106,7 +106,7 @@ function App(props) {
              </Route> 
               
             
-            <Route exact path="/accounts/password/reset" component={ResetPassword} />
+            <Route exact path="/accounts/password/reset" element={<ResetPassword/>} />
             <Route exact path="/resetpassword/verify/" render={(props) => <> <VerifyCode type="resetpassword_verify" {...props} /></>} />
             <Route exact path="/resetpassword/verify/:ucode" render={(props) => <> <VerifyCode type="resetpassword_verify" {...props} /></>} />
             <Route exact path={"/create/new/password/:pcode"} render={(props) => <> <CreateNewPassword type="create_new_password" {...props} /></>} />

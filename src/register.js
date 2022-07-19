@@ -117,7 +117,7 @@ function EmailSignUp(props) {
                     <div className="app-name-section-register"><h1>InstaTravel</h1></div>
                     {/* App Description section */}
                     <p className="short-page-description">
-                        Sign up to see photos and videos from your friends.
+                        Sign up to see and share photos.
                     </p>
 
                     {/* Divider */}

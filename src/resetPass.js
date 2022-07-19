@@ -53,7 +53,7 @@ function ResetPassword(props) {
                 setIsLoading(false);
                 setIsError(true);
 
-                setError("Something went wrong");
+                setError("Please insert a valid email address");
             })
 
     }
@@ -76,12 +76,17 @@ function ResetPassword(props) {
                     <form onSubmit={props.handleSubmit}>
                         <div className="reset-password-form-group">
                             <label htmlFor="email">Email</label>
-                            <input type="email" name="email" id="email" value={email} onChange={handleChange} placeholder="john@example.com" />
+                            <input type="email" name="email" id="email" value={email} onChange={handleChange} placeholder="Place a valid email here" />
                         </div>
                     </form>
                 </div>
                 <div className="reset-password-btn-container">
-                    <button className="reset-password-button" onClick={sendCodeHandler}>Send code</button>
+                    <button className="reset-password-button" onClick={sendCodeHandler}>Reset Password</button>
+                </div>
+                <div>
+                    <NavLink to="/login" className="reset-password-link">
+                        Go Back
+                    </NavLink>
                 </div>
 
                 <div className="reset-password-message">
@@ -90,11 +95,7 @@ function ResetPassword(props) {
                         {isLoading?null:isError ? Error : ""}
                     </p>
                 </div>
-                <div>
-                    <NavLink to="/login" className="reset-password-link">
-                        Go Back
-                    </NavLink>
-                </div>
+                
 
             </div>
 

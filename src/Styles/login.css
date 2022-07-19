@@ -50,7 +50,7 @@
     margin-left: 11px;
     margin-top: 7px;
     border: var(--custom-border);
-    background-color: var(--container-color);
+    background-color: black;
 }
 
 .switch-to-signup-container>span:first-child {
@@ -58,6 +58,7 @@
     display: inline-block;
     text-align: center;
     padding: 11px;
+    color: white;
 }
 
 .switch-to-signup-container>span:last-child>a {
@@ -86,8 +87,7 @@
     width: 100%;
     padding: 11px;
     margin: 7px;
-    background-color:rgb(207, 207, 207);
-    
+    background-color:rgb(207, 207, 207);    
     border-radius: 3px;
 }
 
