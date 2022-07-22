@@ -3,19 +3,16 @@ const express = require('express')
 const app = express()
 const http = require('http').createServer(app)
 const port = 8000
-var register = require('./model/register')
-var login = require('./model/login')
-var searchuser = require('./model/searchuser')
+var register = require('./register')
+var login = require('./login')
+var searchuser = require('./searchuser')
 const path = require('path')
 const cors = require('cors')
 const bodyParser = require('body-parser');
 const multer = require('multer')
-const helper = require('./model/helper')
-const chat = require('./model/chat')
-const MessageStructure = require('./model/chat')
+const helper = require('./helper')
 const jwt = require('jsonwebtoken')
-
-const { sendMail } = require('./model/sendMail')
+const { sendMail } = require('./sendMail')
 const md5 = require('md5')
 
 
@@ -102,7 +99,7 @@ var storage = multer.diskStorage({
         cb(null, './assets/media/images/profile')
     },
     filename: function (req, file, cb) {
-        let username = req.user.username
+        let username = req.users.username
 
         cb(null, md5(username, 16) + extension(file.mimetype))
     }
@@ -117,7 +114,7 @@ var media = multer.diskStorage({
         }
     },
     filename: function (req, file, cb) {
-        let username = req.user.username
+        let username = req.users.username
         let timestamp = new Date().getTime()
         let filename = md5(username + timestamp) + extension(file.mimetype)
         filename = filename.replace(/\s/g, '')
@@ -219,9 +216,9 @@ app.post('/accounts/email/verify', async (req, res) => {
 })
 
 
-function generateAccessToken(userId, username, useremail) {
+function generateAccessToken(idusers, username, useremail) {
     ////console.logprocess.env.ACCESS_TOKEN_SECRET);
-    var token = jwt.sign({ userId: userId, username: username, useremail: useremail }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '48h' })
+    var token = jwt.sign({ idusers: idusers, username: username, useremail: useremail }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '48h' })
     return token
 }
 
@@ -252,7 +249,7 @@ app.post('/login', async (req, res) => {
                 token: token,
             })
         }
-        const token = generateAccessToken(result[0].userId, result[0].username, result[0].useremail)
+        const token = generateAccessToken(result[0].idusers, result[0].username, result[0].useremail)
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
@@ -282,11 +279,11 @@ function AuthenticationToken(req, res, next) {
     if (token == null) {
         return res.send({ status: 403, statusText: "Failed", message: "Please Login" })
     }
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, users) => {
         if (err) {
             return res.send({ status: 403, statusText: "Failed", message: "Please Login" })
         }
-        req.user = user
+        req.users = users
         next()
     })
 }
@@ -307,11 +304,11 @@ app.get('/', AuthenticationToken, async (req, res) => {
 
 
 app.get('/current_user_info', AuthenticationToken, async (req, res) => {
-    const userId = req.user.userId
-    const username = req.user.username
+    const idusers = req.users.idusers
+    const username = req.users.username
 
-    if (userId != null) {
-        var result = await register.getUserInfo(userId);
+    if (idusers != null) {
+        var result = await register.getUserInfo(idusers);
         ////console.logresult)
         if (result === false) {
             return res.send({ status: 403, statusText: "Failed", message: "Something went wrong" })
@@ -332,7 +329,7 @@ app.get('/current_user_info', AuthenticationToken, async (req, res) => {
                 account_status: result[0].account_status,
                 account_visiblity: result[0].account_visiblity,
                 username: username,
-                userId: userId
+                idusers: idusers
             })
         } else {
             return res.send({ status: 403, statusText: "Failed", message: "Something went wrong" })
@@ -374,8 +371,8 @@ app.post('/other_user_profile', async (req, res) => {
         res.send({ status: 403, message: "User not found" })
 })
 app.get('/get_user', async (req, res) => {
-    const { userId } = req.query
-    var result = await register.getUserInfoByUserId(userId)
+    const { idusers } = req.query
+    var result = await register.getUserInfoByUserId(idusers)
 
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -408,8 +405,8 @@ app.get('/search?:q', async (req, res) => {
 app.get('/explore/people', AuthenticationToken, async (req, res) => {
     let limit = 250
     let offset = 1
-    let userId = req.user.userId
-    let result = await searchuser.explore(userId, limit, offset)
+    let idusers = req.users.idusers
+    let result = await searchuser.explore(idusers, limit, offset)
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     return res.status(200).send(result)
@@ -427,7 +424,7 @@ app.post('/upload_profile', AuthenticationToken, async (req, res) => {
         // ////console.logreq.file.path);
         var profileUrl = req.file.path.replace(/..\\public/g, "")
 
-        register.updateProfile(req.user.userId, profileUrl)
+        register.updateProfile(req.users.idusers, profileUrl)
 
             .then(result => {
                 if (result) {
@@ -449,7 +446,7 @@ app.post('/upload_profile', AuthenticationToken, async (req, res) => {
 
 app.post('/follow/', AuthenticationToken, async (req, res) => {
     let { followTo } = req.body
-    let currentUserId = req.user.userId
+    let currentUserId = req.users.idusers
     if (currentUserId === undefined) {
         return res.status(403).send({ status: 403, message: "Please login" })
     }
@@ -460,16 +457,16 @@ app.post('/follow/', AuthenticationToken, async (req, res) => {
     return res.send(result)
 })
 
-app.get('/is_following?:userId', AuthenticationToken, async (req, res) => {
-    let { userId } = req.query
-    let currentUserId = req.user.userId
-    let result = await register.isFollowing(currentUserId, userId)
+app.get('/is_following?:idusers', AuthenticationToken, async (req, res) => {
+    let { idusers } = req.query
+    let currentUserId = req.users.idusers
+    let result = await register.isFollowing(currentUserId, idusers)
     // ////console.logresult);
     return res.send({ status: 200, result: result, currentUserId: currentUserId })
 })
 
 app.get('/currentUser_follower_following', AuthenticationToken, async (req, res) => {
-    let currentUserId = req.user.userId
+    let currentUserId = req.users.idusers
 
     if (currentUserId == undefined || currentUserId == NaN) {
 
@@ -481,134 +478,12 @@ app.get('/currentUser_follower_following', AuthenticationToken, async (req, res)
     return res.status(200).send({ followers: followers, following: following, post: postCount })
 })
 
-app.get('/get_follower_following?:userId', async (req, res) => {
-    let { userId } = req.query
-
-    if (userId == undefined || userId == NaN) {
-        return res.status(403).send({ status: 403, message: "Please login" })
-    }
-    let followers = await helper.getFollowerCount(userId)
-    let following = await helper.getFollowingCount(userId)
-    let postCount = await helper.getPostCount(userId)
-    //  ////console.logfollowers, following);
-    return res.status(200).send({ followers: followers, following: following, post: postCount })
-})
-app.get('/get_followers?:info', AuthenticationToken, async (req, res) => {
-    let { info } = req.query
-
-
-    let json = JSON.parse(info)
-    let { userId, username } = json
-
-    let currentUserId = req.user.userId
-    let currentUsername = req.user.username
-
-    if (currentUserId === undefined) {
-        return res.status(403).send({ status: 403, message: "Please login" })
-    }
-    if (currentUserId === userId) {
-        let result = await helper.getFollowers(userId)
-        // ////console.log"same user");
-        return res.status(200).send({
-            status: 200,
-            isSameUser: true,
-            followers: result
-
-        })
-    }
-    if (currentUsername == undefined) {
-
-    }
-    if (isNaN(userId)) {
-        // ////console.log"userId is not a number");
-        return res.status(403).send({ status: 403, message: "userId is not a number" })
-    }
-    let userInfo = await register.getUserInfo(userId)
-
-    if (userInfo.length === 0) {
-        return res.status(403).send({ status: 403, message: "User not found" })
-    }
-    let account_visiblity = userInfo[0].account_visiblity
-    if (account_visiblity.toLowerCase() === "private".toLowerCase()) {
-        ////console.log"private account");
-        return res.status(403).send({ status: 403, message: "private account" })
-    }
-
-    let result = await helper.getFollowers(userId)
-    return res.status(200).send({
-        status: 200,
-        isSameUser: false,
-        followers: result
-    })
-})
-
-app.get('/get_all_followers_ids', AuthenticationToken, async (req, res) => {
-    let userId = req.user.userId
-    let result = await helper.getFollowers(userId)
-    if (result === false) {
-        return res.status(403).send({ status: 403, message: "Something went wrong" })
-    }
-    if (result.length === 0) {
-        return res.status(403).send({ status: 403, message: "No following" })
-    }
-    let ids = result.map(item => item.userId)
-    //console.log(ids);
-    return res.status(200).send({ status: 200, followers: ids })
-})
-
-app.get('/get_followings?:info', AuthenticationToken, async (req, res) => {
-    let { info } = req.query
-
-
-    let json = JSON.parse(info)
-    let { userId, username } = json
-
-    let currentUserId = req.user.userId
-    let currentUsername = req.user.username
-
-
-    if (currentUserId === userId) {
-        let result = await helper.getFollowing(userId)
-        ////console.log"same user");
-        return res.status(200).send({
-            status: 200,
-            isSameUser: true,
-            following: result
-
-        })
-    }
-    if (currentUsername == undefined) {
-
-    }
-    if (isNaN(userId)) {
-        ////console.log"userId is not a number");
-        return res.status(403).send({ status: 403, message: "userId is not a number" })
-    }
-    let userInfo = await register.getUserInfo(userId)
-
-    if (userInfo.length === 0) {
-        return res.status(403).send({ status: 403, message: "User not found" })
-    }
-    let account_visiblity = userInfo[0].account_visiblity
-    if (account_visiblity.toLowerCase() === "private".toLowerCase()) {
-        ////console.log"private account");
-        return res.status(403).send({ status: 403, message: "private account" })
-    }
-
-    let result = await helper.getFollowing(userId)
-    return res.status(200).send({
-        status: 200,
-        isSameUser: false,
-        following: result
-    })
-})
-
 
 app.post('/change_password', AuthenticationToken, async (req, res) => {
 
     let { oldPassword, newPassword, confirmPassword } = req.body
     ////console.logoldPassword, newPassword, confirmPassword);
-    let currentUserId = req.user.userId
+    let currentUserId = req.users.idusers
     ////console.logcurrentUserId);
     if (currentUserId == undefined) {
         return res.send({ status: 403, message: "Please login" })
@@ -623,10 +498,10 @@ app.post('/change_password', AuthenticationToken, async (req, res) => {
 app.post('/create-post', AuthenticationToken, postUpload.array('files'), async (req, res) => {
 
     let uploadedFiles = req.files
-    let currentUserId = req.user.userId
+    let currentUserId = req.users.idusers
     let { caption, tags } = req.body
 
-    let username = req.user.username
+    let username = req.users.username
 
     let result = await helper.postStatus(currentUserId, username, tags, uploadedFiles, caption)
 
@@ -638,8 +513,8 @@ app.post('/create-post', AuthenticationToken, postUpload.array('files'), async (
 // Update User Information
 
 app.post('/update_user_info', AuthenticationToken, async (req, res) => {
-    const { account_visiblity, bio, date_of_birth, email, fullname, gender, profile, username, website } = req.body
-    let userId = req.user.userId
+    const { account_visiblity, bio, date_of_birth, email, fullname, profile, username, website } = req.body
+    let idusers = req.users.idusers
 
     const userInfo = {
         account_visiblity: account_visiblity,
@@ -647,7 +522,6 @@ app.post('/update_user_info', AuthenticationToken, async (req, res) => {
         date_of_birth: date_of_birth,
         email: email,
         fullname: fullname,
-        gender: gender,
         profile: profile,
         username: username,
         website: website
@@ -656,61 +530,17 @@ app.post('/update_user_info', AuthenticationToken, async (req, res) => {
         return res.send({ status: 403, message: "Name field can't be empty" })
     }
 
-    let result = await register.updateUserInfo(userId, userInfo)
+    let result = await register.updateUserInfo(idusers, userInfo)
 
     return res.send(result)
 })
 
-app.post('/create_a_chat', AuthenticationToken, async (req, res) => {
-    let { users } = req.body
-    users = users[0]
-    let current_userId = req.user.userId
-    let result = await helper.createChat(current_userId, users)
-    if (current_userId === undefined) {
-        return res.send({ status: 403, message: "Please login" })
-    }
-    if (users.userId === 0) {
-        return res.send({ status: 403, message: "Something went's wrong" })
-    }
-    if (users.userId === current_userId) {
-        return res.send({ status: 403, message: "You can't chat with yourself" })
-    }
 
-
-
-    if (result === false) {
-        return res.send({ status: 403, message: "Something went's wrong" })
-
-    }
-
-    res.send({ status: 200, message: "Chat created successfully", chatId: result, username: users.username })
-    res.end()
-})
-
-app.get('/get_all_chatusers', AuthenticationToken, async (req, res) => {
-    let current_userId = req.user.userId
-    if (current_userId === undefined) {
-        return res.send({ status: 403, message: "Please login" })
-    }
-    let result = await helper.getAllChatUsers(current_userId)
-
-    if (result === false) {
-        return res.send({ status: 403, message: "Something went's wrong" })
-    }
-    res.send({
-        users: result,
-        status: 200,
-        currentUserId: current_userId
-    })
-
-
-
-})
 
 app.post('/send_message_text', AuthenticationToken, async (req, res) => {
     let { receiverId, message, messageReference } = req.body
     let type = "text"
-    let current_userId = req.user.userId
+    let current_userId = req.users.idusers
     let timestamp = new Date().getTime()
     ////console.logtimestamp);
     if (current_userId === undefined) {
@@ -745,7 +575,7 @@ app.post('/send_message_text', AuthenticationToken, async (req, res) => {
 
 app.post('/get_chat_messages', AuthenticationToken, async (req, res) => {
     let { receiverId } = req.body
-    let current_userId = req.user.userId
+    let current_userId = req.users.idusers
     if (current_userId === undefined) {
         return res.send({ status: 403, message: "Please login" })
     }
@@ -755,14 +585,14 @@ app.post('/get_chat_messages', AuthenticationToken, async (req, res) => {
     if (result === false) {
         return res.send({ status: 403, message: "Something went's wrong" })
     }
-    res.send({ messages: result, userId: current_userId })
+    res.send({ messages: result, idusers: current_userId })
 })
 app.post('/get_current_user_id', AuthenticationToken, (req, res) => {
-    let current_userId = req.user.userId
+    let current_userId = req.users.idusers
     if (current_userId === undefined) {
         return res.send({ status: 403, message: "Please login" })
     }
-    res.send({ status: 200, userId: current_userId })
+    res.send({ status: 200, idusers: current_userId })
 })
 
 function checkAlreadyVisited(visited, postId) {
@@ -800,19 +630,19 @@ function groupingPosts(posts) {
 
 
 app.get('/posts', AuthenticationToken, async (req, res) => {
-    let userId = req.user.userId
+    let idusers = req.users.idusers
     let offset = req.query.offset
     let limit = req.query.limit
-    let result = await helper.getPosts(userId, offset, limit)
+    let result = await helper.getPosts(idusers, offset, limit)
     let post = groupingPosts(result)
-    res.send({ posts: post, userId: userId, status: 200, message: "Posts fetched successfully", reachMax: result.length === 0 ? true : false })
+    res.send({ posts: post, idusers: idusers, status: 200, message: "Posts fetched successfully", reachMax: result.length === 0 ? true : false })
 })
 
 app.put('/like_post', AuthenticationToken, async (req, res) => {
-    let { postId, userId } = req.body
-    let currentUserId = req.user.userId
+    let { postId, idusers } = req.body
+    let currentUserId = req.users.idusers
 
-    let result = await helper.likePost(postId, userId, currentUserId)
+    let result = await helper.likePost(postId, idusers, currentUserId)
     ////console.logresult);
     if (result === false) {
         return res.send({ status: 403, message: "Something went's wrong" })
@@ -824,7 +654,7 @@ app.put('/like_post', AuthenticationToken, async (req, res) => {
 app.post('/comment_post', AuthenticationToken, async (req, res) => {
     let { postId, comment, commentParentId } = req.body
 
-    let currentUserId = req.user.userId
+    let currentUserId = req.users.idusers
     let commentType = "text"
     let result = await helper.commentPost(postId, comment, currentUserId, commentParentId, commentType)
     if (result === false) {
@@ -835,7 +665,7 @@ app.post('/comment_post', AuthenticationToken, async (req, res) => {
 
 app.get('/get_comment_countAndCheck_user_like', AuthenticationToken, async (req, res) => {
     let { postId } = req.query
-    let currentUserId = req.user.userId
+    let currentUserId = req.users.idusers
     let likes = await helper.checkLike(postId, currentUserId)
     let result = await helper.getCommentCount(postId)
 
@@ -892,8 +722,8 @@ app.get('/p/', async (req, res) => {
 })
 
 app.get('/get_more_post', async (req, res) => {
-    let { postId, userId } = req.query
-    let result = await helper.getMorePost(postId, userId)
+    let { postId, idusers } = req.query
+    let result = await helper.getMorePost(postId, idusers)
     if (result === false) {
         return res.send({ status: 403, message: "Something went's wrong" })
     }
@@ -904,8 +734,8 @@ app.get('/get_more_post', async (req, res) => {
 
 app.get('/explore', AuthenticationToken, async (req, res) => {
 
-    //Find out the user behaviour 
-    const userId = req.user.userId
+    //Find out the users behaviour 
+    const idusers = req.users.idusers
 
     const result = await helper.getExplores()
     if (result === false) {
@@ -922,10 +752,10 @@ app.get('/explore', AuthenticationToken, async (req, res) => {
 
 app.get('/suggestions', AuthenticationToken, async (req, res) => {
 
-    //Find out the user behaviour 
-    const userId = req.user.userId
+    //Find out the users behaviour 
+    const idusers = req.users.idusers
 
-    const suggestions = await helper.getSuggestions(userId)
+    const suggestions = await helper.getSuggestions(idusers)
     if (suggestions === false) {
         res.send({ status: 403, message: "Something went's wrong" })
     }
@@ -935,10 +765,10 @@ app.get('/suggestions', AuthenticationToken, async (req, res) => {
 })
 app.get('/count_message_request', AuthenticationToken, async (req, res) => {
 
-    const userId = req.user.userId
+    const idusers = req.users.idusers
 
 
-    let result = await chat.getMessageRequestCount(userId)
+    let result = await chat.getMessageRequestCount(idusers)
     if (result === false) {
         res.send({ status: 403, message: "Something went's wrong" })
     }
@@ -949,9 +779,9 @@ app.get('/count_message_request', AuthenticationToken, async (req, res) => {
 })
 app.get('/get_all_message_request', AuthenticationToken, async (req, res) => {
 
-    let userId = req.user.userId
+    let idusers = req.users.idusers
 
-    let result = await chat.getAllMessageRequests(userId)
+    let result = await chat.getAllMessageRequests(idusers)
     if (result === false) {
         res.send({ status: 403, message: "Something went's wrong" })
     }
@@ -970,10 +800,10 @@ app.get('/get_all_message_request', AuthenticationToken, async (req, res) => {
 
 app.get('/accept_chatrequest', AuthenticationToken, async (req, res) => {
     let { id, cuid } = req.query
-    let userId = req.user.userId
+    let idusers = req.users.idusers
 
 
-    let result = await chat.acceptChatRequest(id, cuid, 1, userId)
+    let result = await chat.acceptChatRequest(id, cuid, 1, idusers)
 
     if (result === false) {
         res.send({ status: 403, message: 'fail' })
@@ -984,8 +814,8 @@ app.get('/accept_chatrequest', AuthenticationToken, async (req, res) => {
 
 app.get('/ignore_chat', AuthenticationToken, async (req, res) => {
     let { cuid } = req.query
-    let userId = req.user.userId
-    let result = chat.ignoreChat(cuid, userId, 1, 0)
+    let idusers = req.users.idusers
+    let result = chat.ignoreChat(cuid, idusers, 1, 0)
     if (result === false) {
         res.send({ status: 403, message: 'fail' })
     }
@@ -993,8 +823,8 @@ app.get('/ignore_chat', AuthenticationToken, async (req, res) => {
 })
 
 app.get('/currentuser_posts', AuthenticationToken, async (req, res) => {
-    let userId = req.user.userId
-    let result = await helper.getUserPosts(userId)
+    let idusers = req.users.idusers
+    let result = await helper.getUserPosts(idusers)
     if (result === false) {
         res.status(403).send({ status: 403, message: 'fail' })
     }
@@ -1002,10 +832,10 @@ app.get('/currentuser_posts', AuthenticationToken, async (req, res) => {
     res.send({ status: 200, message: 'success', posts: post })
 })
 app.get('/otheruser_posts', async (req, res) => {
-    let { userId } = req.query
+    let { idusers } = req.query
 
-    //Check the user is public or private 
-    let userInfo = await register.getUserInfo(userId)
+    //Check the users is public or private 
+    let userInfo = await register.getUserInfo(idusers)
     if (userInfo === false) {
         res.send({ status: 403, message: 'fail' })
     }
@@ -1019,7 +849,7 @@ app.get('/otheruser_posts', async (req, res) => {
         res.end()
     } else {
         //Normal flow
-        let result = await helper.getUserPosts(userId)
+        let result = await helper.getUserPosts(idusers)
         if (result === false) {
             res.status(403).send({ status: 403, message: 'fail' })
         }
@@ -1030,10 +860,10 @@ app.get('/otheruser_posts', async (req, res) => {
 })
 
 app.get('/login_user_posts', AuthenticationToken, async (req, res) => {
-    let { userId } = req.query
-    let cuserId = req.user.userId
-    //Check the user is public or private 
-    let userInfo = await register.getUserInfo(userId)
+    let { idusers } = req.query
+    let cuserId = req.users.idusers
+    //Check the users is public or private 
+    let userInfo = await register.getUserInfo(idusers)
     if (userInfo.length === 0) {
         res.send({ status: 403, message: 'fail' })
         res.end()
@@ -1041,14 +871,14 @@ app.get('/login_user_posts', AuthenticationToken, async (req, res) => {
     }
     let account_visiblity = userInfo[0].account_visiblity
     if (account_visiblity.toLowerCase() === 'private') {
-        //check the user is following the current user or not
-        let isFollowing = await helper.isFollowing(userId, cuserId)
+        //check the users is following the current users or not
+        let isFollowing = await helper.isFollowing(idusers, cuserId)
         if (isFollowing === false) {
             res.send({ status: 403, message: 'Private Account' })
             res.end()
             return
         } else {
-            let result = await helper.getUserPosts(userId)
+            let result = await helper.getUserPosts(idusers)
             if (result === false) {
                 res.status(403).send({ status: 403, message: 'fail' })
                 res.end()
@@ -1064,7 +894,7 @@ app.get('/login_user_posts', AuthenticationToken, async (req, res) => {
 
     } else {
         //Normal flow
-        let result = await helper.getUserPosts(userId)
+        let result = await helper.getUserPosts(idusers)
         if (result === false) {
             res.status(403).send({ status: 403, message: 'fail' })
             res.end()
@@ -1083,8 +913,8 @@ app.get('/login_user_posts', AuthenticationToken, async (req, res) => {
 app.post('/save_post', AuthenticationToken, async (req, res) => {
     let { postId } = req.body
 
-    let userId = req.user.userId
-    let result = await helper.savePost(postId, userId)
+    let idusers = req.users.idusers
+    let result = await helper.savePost(postId, idusers)
     if (result === false) {
         res.status(403).send({ status: 403, message: 'fail' })
     }
@@ -1092,8 +922,8 @@ app.post('/save_post', AuthenticationToken, async (req, res) => {
 
 })
 app.get('/get_saved_posts', AuthenticationToken, async (req, res) => {
-    let userId = req.user.userId
-    let result = await helper.getSavedPosts(userId)
+    let idusers = req.users.idusers
+    let result = await helper.getSavedPosts(idusers)
     if (result === false) {
         res.status(403).send({ status: 403, message: 'fail' })
     }
@@ -1115,9 +945,9 @@ app.get('/sendMail', (req, res) => {
 })
 
 app.post('/visited_by_someone', AuthenticationToken, async (req, res) => {
-    let { userId } = req.body
-    let currentUserId = req.user.userId
-    let result = await helper.saveVisited(userId, currentUserId)
+    let { idusers } = req.body
+    let currentUserId = req.users.idusers
+    let result = await helper.saveVisited(idusers, currentUserId)
     if (result === false) {
         res.send({ status: 403, message: 'fail' })
         res.end()
@@ -1126,8 +956,8 @@ app.post('/visited_by_someone', AuthenticationToken, async (req, res) => {
     res.end()
 })
 app.post('/visited_by_someone_notlogin', async (req, res) => {
-    let { userId } = req.body
-    let result = await helper.saveVisited(userId, null)
+    let { idusers } = req.body
+    let result = await helper.saveVisited(idusers, null)
     if (result === false) {
         res.send({ status: 403, message: 'fail' })
         res.end()
@@ -1138,8 +968,8 @@ app.post('/visited_by_someone_notlogin', async (req, res) => {
 
 app.post('/postviewer', AuthenticationToken, async (req, res) => {
     let { postUrl } = req.body
-    let userId = req.user.userId
-    let result = await helper.savePostViewer(userId, postUrl)
+    let idusers = req.users.idusers
+    let result = await helper.savePostViewer(idusers, postUrl)
     if (result === false) {
         res.send({ status: 403, message: 'fail' })
         res.end()
@@ -1257,7 +1087,7 @@ app.post('/create_new_password', async (req, res) => {
 
 app.post('/remove_follower', AuthenticationToken, async (req, res) => {
     let { followerId } = req.body
-    let currentUserId = req.user.userId
+    let currentUserId = req.users.idusers
     let result = await helper.removeFollower(followerId, currentUserId)
     if (result === false) {
         res.status(403).send({ status: 403, message: 'fail' })
@@ -1271,8 +1101,8 @@ app.post('/remove_follower', AuthenticationToken, async (req, res) => {
 app.delete('/delete/post/', AuthenticationToken, async (req, res) => {
     let { postId } = req.body
 
-    let userId = req.user.userId
-    let result = await helper.deletePost(postId, userId)
+    let idusers = req.users.idusers
+    let result = await helper.deletePost(postId, idusers)
     return res.send({
         status: result ? "Success" : "Fail",
         statusCode: result ? 200 : 403

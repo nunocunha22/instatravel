@@ -26,7 +26,7 @@ body{
     text-decoration: none;
 }
 
-.main-container-user-information{
+.main-container-users-information{
     display: flex;
     height: 250px;
   
@@ -112,7 +112,7 @@ cursor: pointer;
     cursor: pointer;
 }
 
-.user-fullname-bio-website-field{
+.users-fullname-bio-website-field{
     position:relative;
     display: flex;
     justify-content: flex-start;
@@ -120,16 +120,16 @@ cursor: pointer;
     margin: 7px;
     flex-wrap: wrap;
 }
-.user-fullname-bio-website-field h3{
+.users-fullname-bio-website-field h3{
     display: block;
     width: 100%;
     font-weight: 400;
 }
-.user-fullname-bio-website-field a{
+.users-fullname-bio-website-field a{
     display: block;
     width: 100%;
 }
-.user-fullname-bio-website-field span{
+.users-fullname-bio-website-field span{
     display: block;
     width: 100%;
 }
@@ -141,7 +141,7 @@ cursor: pointer;
 }
 
 
-/*Suggest to login for the unAuth user */
+/*Suggest to login for the unAuth users */
 
 .suggest-to-login{
     position: sticky;
@@ -154,7 +154,7 @@ cursor: pointer;
     box-shadow: 0 0 3px 1px rgba(95, 93, 93, 0.8);
   
 }
-.user-fullname-bio-website-field>a{
+.users-fullname-bio-website-field>a{
     position: relative;
     text-decoration: none;
     color: rgb(3, 92, 107);

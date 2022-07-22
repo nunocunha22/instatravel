@@ -17,8 +17,8 @@
         align-items: center;
         width: 100%;
         cursor: pointer;
-        user-select: none;
-        -webkit-user-drag: none;
+        users-select: none;
+        -webkit-users-drag: none;
     }
     
 }

@@ -6,12 +6,12 @@ import HOST_URL from "../proxy";
 
 function SuggestionItem(props) {
     let suggestion = props.suggestion
-    let [user, setUser] = useState({})
+    let [users, setUser] = useState({})
     let followers = props.followers
 
     useEffect(() => {
         setUser({
-            userId: suggestion.userId,
+            idusers: suggestion.idusers,
             username: suggestion.username,
             profile: suggestion.profile,
             account_visiblity: suggestion.account_visiblity,
@@ -33,14 +33,14 @@ function SuggestionItem(props) {
 
 
     return <>
-        <div className="suggestion-item-user">
+        <div className="suggestion-item-users">
 
-            <a href={"/" + user.username} style={style.linkStyle}> <div className="suggestion-item-user-image">
-                <img src={HOST_URL + "/" + user.profile} key={user.username} />
+            <a href={"/" + users.username} style={style.linkStyle}> <div className="suggestion-item-users-image">
+                <img src={HOST_URL + "/" + users.profile} key={users.username} />
             </div></a>
-            <div className="suggestion-item-user-info">
-                <div className="suggestion-item-user-name">
-                    <a href={"/" + user.username} style={style.linkStyle}>{user.username}</a>
+            <div className="suggestion-item-users-info">
+                <div className="suggestion-item-users-name">
+                    <a href={"/" + users.username} style={style.linkStyle}>{users.username}</a>
                 </div>
 
             </div>
@@ -62,12 +62,12 @@ function ScrollButton(props) {
 }
 function VerticalSuggestionItem(props) {
     let suggestion = props.suggestion
-    let [user, setUser] = useState({})
+    let [users, setUser] = useState({})
     let followers = props.followers
 
     useEffect(() => {
         setUser({
-            userId: suggestion.userId,
+            idusers: suggestion.idusers,
             username: suggestion.username,
             profile: suggestion.profile,
             account_visiblity: suggestion.account_visiblity,
@@ -84,14 +84,14 @@ function VerticalSuggestionItem(props) {
     return <>
         <div className="vertical-suggestion-item">
             <div className="vertical-suggestion-item-image">
-                <img src={HOST_URL + "/" + user.profile} style={{ height: '32px', width: '32px', borderRadius: '50%' }} />
+                <img src={HOST_URL + "/" + users.profile} style={{ height: '32px', width: '32px', borderRadius: '50%' }} />
             </div>
             <div className="vertical-suggestion-item-info">
                 <div className="vertical-suggestion-item-name">
-                    <a href={"/" + user.username} style={{
+                    <a href={"/" + users.username} style={{
                         color: '#000',
                         textDecoration: 'none',
-                    }}>{user.username}</a>
+                    }}>{users.username}</a>
                 </div>
 
             </div>

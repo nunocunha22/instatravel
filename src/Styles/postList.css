@@ -20,7 +20,7 @@
     width: 100%;
     image-resolution: contain;
     cursor: pointer;
-    user-select: none;
+    users-select: none;
     transition: all 0.5s ease-in-out;
 }
 .active-slide{
@@ -82,8 +82,8 @@
     width: 40px;
     border-radius: 100%;
     cursor: pointer;
-    user-select: none;
-    -webkit-user-drag: none;
+    users-select: none;
+    -webkit-users-drag: none;
 }
 .post-header-left{
     position: relative;
@@ -109,10 +109,10 @@
     padding: 5px;    
     font-size: 13px;
      z-index: 9;
-     user-select: none;
+     users-select: none;
 }
 
-.small-view-hover-user{
+.small-view-hover-users{
     position: absolute;
     top: 50px;
     left: 35px;
@@ -125,7 +125,7 @@
     border:1px solid rgb(109, 105, 105);
     border-radius: 25px;
      z-index: 9;
-     user-select: none;
+     users-select: none;
      box-shadow: 0 0 5px 5px rgba(70, 69, 69, 0.5);
 }
 .footer-post-buttons{
@@ -194,8 +194,8 @@ hr{
     align-items: center;
     width: 40%;
     cursor: pointer;
-    user-select: none;
-    -webkit-user-drag: none;
+    users-select: none;
+    -webkit-users-drag: none;
 }
 .people-list-item-img>img{
     height: 60px;
@@ -203,7 +203,7 @@ hr{
     object-fit: cover;
     border-radius: 100%;
 }
-.explore-people-user-info{
+.explore-people-users-info{
     position: relative;
     display: flex;
     justify-content: center;

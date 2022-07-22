@@ -24,7 +24,7 @@ class OtherUserProfile extends React.Component {
             followers: 0,
             posts: 0,
             following: 0,
-            userId: 0,
+            idusers: 0,
             username: "",
             fullname: "",
             user_type: "",
@@ -40,7 +40,7 @@ class OtherUserProfile extends React.Component {
     }
 
     getFollowerAndFollowingCount = () => {
-        axios.get(HOST_URL + '/get_follower_following?userId=' + this.state.userId).then(result => {
+        axios.get(HOST_URL + '/get_follower_following?idusers=' + this.state.idusers).then(result => {
             if (result.status === 200) {
                 let data = result.data
 
@@ -94,7 +94,7 @@ class OtherUserProfile extends React.Component {
                 })
             } else {
                 this.setState({
-                    userId: res[0].userId,
+                    idusers: res[0].idusers,
                     username: res[0].username,
                     fullname: res[0].fullname,
                     user_type: res[0].user_type,
@@ -117,7 +117,7 @@ class OtherUserProfile extends React.Component {
 
             if (Cookies.get('token') !== undefined) {
                 axios.post(HOST_URL + '/visited_by_someone', {
-                    userId: this.state.userId,
+                    idusers: this.state.idusers,
                 }, {
                     headers: {
                         'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ class OtherUserProfile extends React.Component {
                 })
             } else {
                 axios.post(HOST_URL + '/visited_by_someone_notlogin', {
-                    userId: this.state.userId,
+                    idusers: this.state.idusers,
                 }, {
                     headers: {
                         'Content-Type': 'application/json'
@@ -172,20 +172,20 @@ class OtherUserProfile extends React.Component {
             <UserNotLogin />
             <div className="dashboard">
                 {/* User Information Section */}
-                <div className="main-container-user-information">
+                <div className="main-container-users-information">
 
                     <section className="profile-section">
-                        <img draggable={false} src={HOST_URL + "/" + this.state.profile} className="current-user-profile" />
+                        <img draggable={false} src={HOST_URL + "/" + this.state.profile} className="current-users-profile" />
                     </section>
 
-                    <section className="user-information-section">
+                    <section className="users-information-section">
                         {/*  */}
                         <div className="username-edit-setting">
                             <h2>{this.state.username}</h2>
                             
                         </div>
                         
-                        <div className="user-fullname-bio-website-field">
+                        <div className="users-fullname-bio-website-field">
                             <h3>{this.state.fullname}</h3>
                             <div>{this.state.description}</div>
                             <a href={"https://" + this.state.website} target="_blank">{this.state.website}</a>
@@ -202,11 +202,11 @@ class OtherUserProfile extends React.Component {
                 <BrowserRouter>
                     <div className="main-container-dashboard-menu">
 
-                        <div className="current-user-post dashboard-sub-menu" >
+                        <div className="current-users-post dashboard-sub-menu" >
                             <Link to={postsUrl} className="sub-menu-item"><i className="material-icons" onSelect={this.handleSelected}>person</i><span>POSTS</span></Link>
                         </div>
 
-                        <div className="current-user-tagged dashboard-sub-menu"  >
+                        <div className="current-users-tagged dashboard-sub-menu"  >
                             <Link to={taggedUrl} className="sub-menu-item" onSelect={this.handleSelected}><i className="material-icons">portrait</i><span>TAGGED</span></Link>
                         </div>
 
@@ -219,7 +219,7 @@ class OtherUserProfile extends React.Component {
 
                         <Routes>
                             <Route exact path={postsUrl}>
-                                <DashboardPosts userId={this.state.userId} />
+                                <DashboardPosts idusers={this.state.idusers} />
                             </Route>
                             <Route exact path={taggedUrl}>
                                 <h1>Tagged</h1>

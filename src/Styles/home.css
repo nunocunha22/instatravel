@@ -109,7 +109,7 @@
     display: none;
 }
 
-.suggestion-item-user {
+.suggestion-item-users {
     position: relative;
     background-color: white;
     cursor: pointer;
@@ -129,7 +129,7 @@
     display: none;
 }
 
-.suggestion-item-user-image {
+.suggestion-item-users-image {
     position: relative;
     height: 120px;
     width: 100%;
@@ -139,14 +139,14 @@
 
 }
 
-.suggestion-item-user-image img {
+.suggestion-item-users-image img {
     height: 50px;
     width: 50px;
     border-radius: 100%;
     object-fit: cover;
 }
 
-.suggestion-item-user-info {
+.suggestion-item-users-info {
     position: relative;
     width: 100%;
     display: flex;
@@ -158,7 +158,7 @@
     color: #000;
 }
 
-.suggestion-item-user-name {
+.suggestion-item-users-name {
     margin: 7px;
 }
 
@@ -185,7 +185,7 @@
     padding: 5px;
     border-radius: 50%;
     cursor: pointer;
-    user-select: none;
+    users-select: none;
     z-index: 15;
 }
 .suggestions-container-header{
@@ -199,7 +199,7 @@
     padding: 5px;
     border-radius: 5px;
     cursor: pointer;
-    user-select: none;
+    users-select: none;
     
 }
 
@@ -222,7 +222,7 @@
     padding: 5px;
     border-radius: 5px;
     cursor: pointer;
-    user-select: none;
+    users-select: none;
     
 }
 .vertical-suggestion-item{
@@ -288,7 +288,7 @@
     border-bottom: 1px solid #e5e5e5;
     transition: all 0.5s ease-in-out;
 }
-.post-report,.post-delete-post,.post-unfollow-user{
+.post-report,.post-delete-post,.post-unfollow-users{
     font-weight: bold;
     color: rgb(0, 69, 133);
     transition: all 0.5s ease-in-out;

@@ -75,17 +75,17 @@ function customHeight(height) {
 function PostHeader(props) {
     let post = props.post;
     let remove = props.remove;
-    let [user, setUser] = React.useState({});
+    let [users, setUser] = React.useState({});
     let [isLoading, setIsLoading] = React.useState(true);
     let [isClicked, setIsClicked] = React.useState(false);
     let currentUid = props.currentUserId;
-    let pc_userId = post && post[0].userId;
+    let pc_userId = post && post[0].idusers;
     let [msg, setmsg] = React.useState("");
     let [deletestatus, setStatus] = React.useState(false);
     let [hasMessage, setHasMessage] = React.useState(false);
     // let [smallView, setSmallView] = React.useState(false);
     useEffect(() => {
-        axios.get(HOST_URL + "/get_user?userId=" + pc_userId).then(res => {
+        axios.get(HOST_URL + "/get_user?idusers=" + pc_userId).then(res => {
             if (res.status === 200) {
                 setIsLoading(false);
                 setUser(res.data);
@@ -122,10 +122,10 @@ function PostHeader(props) {
         {
         }
         <div className="post-header-left">
-            <img src={HOST_URL + "/" + user.profile} alt="" decoding="auto" crossOrigin="anonymous" draggable={false} className="post-header-profile-picture" />
-            <Link to={"/" + user.username} className="post-header-username"
+            <img src={HOST_URL + "/" + users.profile} alt="" decoding="auto" crossOrigin="anonymous" draggable={false} className="post-header-profile-picture" />
+            <Link to={"/" + users.username} className="post-header-username"
                 style={{ color: "black", textDecoration: "none" }}
-            >{user.username}</Link>
+            >{users.username}</Link>
 
         </div>
         <div className="post-header-right">
@@ -140,7 +140,7 @@ function PostList(props) {
     const post = props.post;
     const [slideIndex, setSlideIndex] = React.useState(0);
     const [height, setHeight] = React.useState(500);
-    const currentUserId = props.userId;
+    const currentUserId = props.idusers;
     const remove = props.remove;
     let len = post && post.length;
 

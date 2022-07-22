@@ -79,7 +79,7 @@ class ExplorePeople extends React.Component {
         }
         return <>
             {this.state.exploreResult && this.state.exploreResult.map((people, index) => {
-                return <PeopleList key={index} user={people} isAuth={this.props.isAuth} />
+                return <PeopleList key={index} users={people} isAuth={this.props.isAuth} />
             })
             }
             <FooterRender isFooterLoading={this.state.isFooterLoading} />

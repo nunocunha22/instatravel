@@ -78,22 +78,22 @@ function PostViewerSliderItem(props) {
 
 function RightSideHeader(params) {
     let post = params.post;
-    let userId = post && post[0][0].userId;
-    let [user, userInfo] = React.useState(null);
+    let idusers = post && post[0][0].idusers;
+    let [users, userInfo] = React.useState(null);
     let [isError, setIsError] = React.useState(false);
     let [errorMessage, setErrorMessage] = React.useState('');
     let [isLoading, setIsLoading] = React.useState(true);
     let [isPopupView, setIsPopupView] = React.useState(false);
     useEffect(() => {
-        if (userId == null) { return; }
-        axios.get(HOST_URL + "/get_user?userId=" + userId, {
+        if (idusers == null) { return; }
+        axios.get(HOST_URL + "/get_user?idusers=" + idusers, {
             headers: {
                 "Content-Type": "application/json",
             }
         }).then(res => {
             if (res.status === 200) {
                 userInfo({
-                    userId: res.data.userId,
+                    idusers: res.data.idusers,
                     username: res.data.username,
                     profile: res.data.profile,
                     incFollower: () => { },
@@ -106,7 +106,7 @@ function RightSideHeader(params) {
             setErrorMessage(err.message);
 
         })
-    }, [userId])
+    }, [idusers])
     if (isLoading) {
         return <></>
     }
@@ -120,9 +120,9 @@ function RightSideHeader(params) {
   
         <div className={"righsideheader-main-container"}>
             <div className={"righsideheader-left-side"}>
-                <a href={"/" + user.username}>  <img className={"righsideheader-left-side-img"} draggable={false} src={HOST_URL + "/" + user.profile} /></a>
+                <a href={"/" + users.username}>  <img className={"righsideheader-left-side-img"} draggable={false} src={HOST_URL + "/" + users.profile} /></a>
                 <div className={"righsideheader-left-side-name"}>
-                    <a href={"/" + user.username} style={linkStyle}>{user.username}</a>
+                    <a href={"/" + users.username} style={linkStyle}>{users.username}</a>
                 </div>
             </div>
           
@@ -275,7 +275,7 @@ function MorePost(params) {
     let [isLoading, setIsLoading] = React.useState(true);
     useEffect(() => {
         if (post === null) { return; }
-        axios.get(HOST_URL + "/get_more_post?postId=" + post[0][0].postId + "&userId=" + post[0][0].userId, {
+        axios.get(HOST_URL + "/get_more_post?postId=" + post[0][0].postId + "&idusers=" + post[0][0].idusers, {
             headers: {
                 "Content-Type": "application/json",
 

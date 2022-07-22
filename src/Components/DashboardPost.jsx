@@ -106,11 +106,11 @@ function DashboardPosts(props) {
                 setLoading(false);
             });
         } else {
-            let userId = props.userId;
+            let idusers = props.idusers;
 
             //Check the viewer is login or not
             if (Cookies.get("token")) {
-                axios.get("/login_user_posts?userId=" + userId, {
+                axios.get("/login_user_posts?idusers=" + idusers, {
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: "Bearer " + Cookies.get("token")
@@ -145,7 +145,7 @@ function DashboardPosts(props) {
                     setError(true);
                 });
             }else{
-                axios.get("/otheruser_posts?userId=" + userId, {
+                axios.get("/otheruser_posts?idusers=" + idusers, {
                     headers: {
                         'Content-Type': 'application/json',
                     }

@@ -10,11 +10,11 @@ import HOST_URL from './proxy';
 
 function PostAndSuggestionListItem(props) {
     let index = props.index
-    let userId = props.userId
+    let idusers = props.idusers
     let post = props.post
     return <>
         <Suggestion key={'suggestions' + index} type={'scroll-bar'} />
-        <PostList key={index} post={post} userId={userId} />
+        <PostList key={index} post={post} idusers={idusers} />
     </>
 }
 
@@ -24,7 +24,7 @@ function Home(props) {
     const [isLoading, setIsLoading] = useState(true);
     const [posts, setPosts] = useState([]);
     const [isFetchingError, setIsFetchingError] = useState(false);
-    const [userId, setUserId] = useState(0);
+    const [idusers, setUserId] = useState(0);
     const [limit, setLimit] = useState(10);
     const [offset, setOffset] = useState(0);
     const [reachMax, setReachMax] = useState(false);
@@ -99,7 +99,7 @@ function Home(props) {
                         setPosts(filterPost(posts.concat(res.data.posts)));
 
                         setIsLoading(false);
-                        setUserId(res.data.userId);
+                        setUserId(res.data.idusers);
                     }
 
                 } else {
@@ -161,16 +161,6 @@ function Home(props) {
             {/* Post Section */}
             <section className="post-stories-section">
 
-                {/* Stories section */}
-                {/* <section className="stories-section">
-
-                    <div className="stroy-section"></div>
-                    <div className="stroy-section"></div>
-
-                </section> */}
-                {/* Post Section */}
-
-
                 <section className="post-sections">
                     {
                         isLoading ? <></> : posts && posts.length == 0 ? <Suggestion key={'suggestions'} type={'scroll-bar'} /> : null
@@ -178,10 +168,10 @@ function Home(props) {
                     {
                         isLoading ? <>Loading...</> : posts && Array.from(posts).map((post, index) => {
                             if (index == 5 || index == 25) {
-                                return <PostAndSuggestionListItem key={post[0].postId} index={index} post={post} userId={userId} />
+                                return <PostAndSuggestionListItem key={post[0].postId} index={index} post={post} idusers={idusers} />
                             }
 
-                            return <PostList key={post[0].postId} index={index} post={post} userId={userId} remove={remove} />
+                            return <PostList key={post[0].postId} index={index} post={post} idusers={idusers} remove={remove} />
                         })
                     }
                     {

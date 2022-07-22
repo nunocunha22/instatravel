@@ -9,11 +9,11 @@ class PeopleList extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            username: props.user.username,
-            userId: props.user.userId,
-            profilePic: props.user.profile,
-            fullname: props.user.fullname,
-            account_visiblity: props.user.account_visiblity,
+            username: props.users.username,
+            idusers: props.users.idusers,
+            profilePic: props.users.profile,
+            fullname: props.users.fullname,
+            account_visiblity: props.users.account_visiblity,
 
         }
 
@@ -24,7 +24,7 @@ class PeopleList extends React.Component {
         return <>
             <div className="explore-people-main-container">
                 <div className="people-list-item" >
-                    <Link to={"/" + this.state.username} className="explore-people-user-info">
+                    <Link to={"/" + this.state.username} className="explore-people-users-info">
                         <div className="people-list-item-img">
                             <img src={HOST_URL + '/' + this.state.profilePic} alt={this.state.username}/>
                         </div>

@@ -78,8 +78,8 @@
     padding: 7px;
     color: rgb(97, 94, 94);
     font-family: Edwardian Script ITC;
-    user-select: none;
-    -webkit-user-drag: none;
+    users-select: none;
+    -webkit-users-drag: none;
 }
 /*Divider*/
 .divider-register{
@@ -89,7 +89,7 @@
     text-align: center;
     margin-top: 10px;
     margin-bottom: 10px;
-    user-select: none;
+    users-select: none;
 }
 .divider-section-register{
     color: rgb(133, 130, 130);
@@ -167,7 +167,7 @@
     margin-top: 11px;
     display: inline-block;
     width: 17.5rem;
-    background-color: tomato;
+    background-color: rgb(4, 0, 255);
     border-radius: 7px;
     color: white;
     cursor: pointer;

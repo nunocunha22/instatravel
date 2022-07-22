@@ -109,10 +109,10 @@ function PostFooter(props) {
         if(!isAuth){return}
         setIsLiked(!isLiked);
         let postId = post && post[0].postId;
-        let cp_userId = post && post[0].userId;
+        let cp_userId = post && post[0].idusers;
         axios.put(HOST_URL + "/like_post", {
             postId: postId,
-            userId: cp_userId
+            idusers: cp_userId
         },{
             headers: {
                 'Content-Type': 'application/json',

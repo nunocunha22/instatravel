@@ -193,13 +193,13 @@ class Dashbaord extends React.Component {
                 <div className="dashboard">
                     {/* User Information Section */}
 
-                    <div className="main-container-user-information">
+                    <div className="main-container-users-information">
 
                         <section className="profile-section">
-                            <img src={baseUrl + "/" + this.state.profileurl} alt="" className="current-user-profile" />
+                            <img src={baseUrl + "/" + this.state.profileurl} alt="" className="current-users-profile" />
                         </section>
 
-                        <section className="user-information-section">
+                        <section className="users-information-section">
                             {/*  */}
                             <div className="username-edit-setting">
                                 <h2>{this.state.username}</h2>
@@ -231,7 +231,7 @@ class Dashbaord extends React.Component {
                                 </div>
                             </div>
 
-                            <div className="user-fullname-bio-website-field">
+                            <div className="users-fullname-bio-website-field">
                                 <h3>{this.state.fullname}</h3>
                                 <span>{this.state.bio}</span>
                                 <a href={"https://" + this.state.website} target="_blank">{this.state.website}</a>
@@ -254,13 +254,13 @@ class Dashbaord extends React.Component {
 
                         <div className="main-container-dashboard-menu">
 
-                            <div className="current-user-post dashboard-sub-menu" onClick={this.handleClickMenu(0)} >
+                            <div className="current-users-post dashboard-sub-menu" onClick={this.handleClickMenu(0)} >
                                 <Link to={postsUrl} className="sub-menu-item"><i className="material-icons" onSelect={this.handleSelected}>person</i><span>POSTS</span></Link>
                             </div>
-                            <div className="current-user-saved dashboard-sub-menu" onClick={this.handleClickMenu(1)}  >
+                            <div className="current-users-saved dashboard-sub-menu" onClick={this.handleClickMenu(1)}  >
                                 <Link to={savedUrl} className="sub-menu-item" onSelect={this.handleSelected}><i className="material-icons">turned_in_not</i><span>SAVED</span></Link>
                             </div>
-                            <div className="current-user-tagged dashboard-sub-menu" onClick={this.handleClickMenu(2)} >
+                            <div className="current-users-tagged dashboard-sub-menu" onClick={this.handleClickMenu(2)} >
                                 <Link to={taggedUrl} className="sub-menu-item" onSelect={this.handleSelected}><i className="material-icons">portrait</i><span>TAGGED</span></Link>
                             </div>
 

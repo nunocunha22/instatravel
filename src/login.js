@@ -1,11 +1,9 @@
 import axios from "axios";
 import React from "react";
 import { Navigate } from "react-router-dom";
-
 import './Styles/login.css';
 import HOST_URL from "./proxy";
 import Cookies from "js-cookie";
-
 
 class Login extends React.Component {
 
@@ -23,8 +21,6 @@ class Login extends React.Component {
             btnState: true
         };
     
-
-
         this.onChangePassword = this.onChangePassword.bind(this);
         this.onChangeUserName = this.onChangeUserName.bind(this);
         this.onChangeFullName = this.onChangeFullName.bind(this);
