@@ -14,7 +14,7 @@ function EmailSignUp(props) {
 
     const [userInfo, setUserInfo] = React.useState({
         email: "",
-        pswd: "",
+        password: "",
         fullname: "",
         username: "",
     })
@@ -39,7 +39,7 @@ function EmailSignUp(props) {
         }
     },[isRegister])
     useEffect(() => {
-        if (userInfo.email !== "" && userInfo.fullname !== "" && userInfo.username !== "" && userInfo.pswd !== "") {
+        if (userInfo.email !== "" && userInfo.fullname !== "" && userInfo.username !== "" && userInfo.password !== "") {
             setBtnState(false)
         } else {
             setBtnState(true)
@@ -70,7 +70,7 @@ function EmailSignUp(props) {
                         setIsRegister(true)
                         setUserInfo({
                             email: "",
-                            pswd: "",
+                            password: "",
                             fullname: "",
                             username: "",
                         })
@@ -140,7 +140,7 @@ function EmailSignUp(props) {
                         <input type="text" placeholder="Username" value={userInfo.username} onChange={onchangeInput} name="username" id="username" /><br />
 
 
-                        <input type="password" placeholder="Password" value={userInfo.pswd} onChange={onchangeInput} name="pswd" id="pswd" autoComplete="" /><br />
+                        <input type="password" placeholder="Password" value={userInfo.password} onChange={onchangeInput} name="password" id="password" autoComplete="" /><br />
 
 
                         <input className="submit" type="submit" value="Register" disabled={btnState} /><br />

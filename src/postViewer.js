@@ -84,6 +84,7 @@ function RightSideHeader(params) {
     let [errorMessage, setErrorMessage] = React.useState('');
     let [isLoading, setIsLoading] = React.useState(true);
     let [isPopupView, setIsPopupView] = React.useState(false);
+
     useEffect(() => {
         if (idusers == null) { return; }
         axios.get(HOST_URL + "/get_user?idusers=" + idusers, {
@@ -96,8 +97,7 @@ function RightSideHeader(params) {
                     idusers: res.data.idusers,
                     username: res.data.username,
                     profile: res.data.profile,
-                    incFollower: () => { },
-                    decFollower: () => { }
+                    
                 });
                 setIsLoading(false);
             }

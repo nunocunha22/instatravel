@@ -145,7 +145,7 @@ app.get('/assets/media/videos/:filename', (req, res) => {
 })
 
 app.post('/accounts/emailsignup', async (req, res) => {
-    let { email, fullname, username, pswd } = req.body
+    let { email, fullname, username, password } = req.body
     email = email.trim()
     username = username.trim()
     username = username.toLowerCase()
@@ -165,10 +165,10 @@ app.post('/accounts/emailsignup', async (req, res) => {
     if (register.containsSpaceInUserName(username)) {
         return res.send({ status: 403, statusText: "Failed", message: "Username contains space", field: "username" })
     }
-    if (register.passwordStrength(pswd) < 3) {
+    if (register.passwordStrength(password) < 3) {
         return res.send({ status: 403, statusText: "Failed", message: "Password is weak", field: "password" })
     }
-    var result = await register.register(email, fullname, username, pswd)
+    var result = await register.register(email, fullname, username, password)
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     if (result === false) {
@@ -223,7 +223,7 @@ function generateAccessToken(idusers, username, useremail) {
 }
 
 app.post('/login', async (req, res) => {
-
+console.log("Hello")
     const { email, password } = req.body
     var result = await login.login(email, password)
     if (result.length > 0) {
@@ -434,48 +434,8 @@ app.post('/upload_profile', AuthenticationToken, async (req, res) => {
                 }
             })
 
-
-
     })
 
-
-
-})
-
-
-
-app.post('/follow/', AuthenticationToken, async (req, res) => {
-    let { followTo } = req.body
-    let currentUserId = req.users.idusers
-    if (currentUserId === undefined) {
-        return res.status(403).send({ status: 403, message: "Please login" })
-    }
-    if (currentUserId === followTo) {
-        return res.status(403).send({ status: 403, message: "You cannot follow yourself" })
-    }
-    let result = await register.followUser(currentUserId, followTo)
-    return res.send(result)
-})
-
-app.get('/is_following?:idusers', AuthenticationToken, async (req, res) => {
-    let { idusers } = req.query
-    let currentUserId = req.users.idusers
-    let result = await register.isFollowing(currentUserId, idusers)
-    // ////console.logresult);
-    return res.send({ status: 200, result: result, currentUserId: currentUserId })
-})
-
-app.get('/currentUser_follower_following', AuthenticationToken, async (req, res) => {
-    let currentUserId = req.users.idusers
-
-    if (currentUserId == undefined || currentUserId == NaN) {
-
-        return res.status(403).send({ status: 403, message: "Please login" })
-    }
-    let followers = await helper.getFollowerCount(currentUserId)
-    let following = await helper.getFollowingCount(currentUserId)
-    let postCount = await helper.getPostCount(currentUserId)
-    return res.status(200).send({ followers: followers, following: following, post: postCount })
 })
 
 
@@ -651,7 +611,7 @@ app.put('/like_post', AuthenticationToken, async (req, res) => {
 })
 
 
-app.post('/comment_post', AuthenticationToken, async (req, res) => {
+app.post('/comment_post', AuthenticationToken, async (req, res) => {    
     let { postId, comment, commentParentId } = req.body
 
     let currentUserId = req.users.idusers
@@ -759,8 +719,6 @@ app.get('/suggestions', AuthenticationToken, async (req, res) => {
     if (suggestions === false) {
         res.send({ status: 403, message: "Something went's wrong" })
     }
-
-    res.send({ status: 200, suggestions: suggestions.suggestedUserInfos, followers: suggestions.followers })
 
 })
 app.get('/count_message_request', AuthenticationToken, async (req, res) => {
@@ -940,7 +898,7 @@ app.get('/get_comments', AuthenticationToken, async (req, res) => {
 })
 
 app.get('/sendMail', (req, res) => {
-    let email = sendMail("computerstha12@gmail.com", "test", "<h1>test<h1>")
+    let email = sendMail("nunotest@gmail.com", "test", "<h1>test<h1>")
     res.send(email)
 })
 
@@ -1085,19 +1043,7 @@ app.post('/create_new_password', async (req, res) => {
 
 })
 
-app.post('/remove_follower', AuthenticationToken, async (req, res) => {
-    let { followerId } = req.body
-    let currentUserId = req.users.idusers
-    let result = await helper.removeFollower(followerId, currentUserId)
-    if (result === false) {
-        res.status(403).send({ status: 403, message: 'fail' })
-        res.end()
-        return
-    }
-    res.send({ status: 200, message: 'success' })
-    res.end()
-    return
-})
+
 app.delete('/delete/post/', AuthenticationToken, async (req, res) => {
     let { postId } = req.body
 

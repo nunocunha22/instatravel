@@ -7,7 +7,7 @@ import HOST_URL from "../proxy";
 function SuggestionItem(props) {
     let suggestion = props.suggestion
     let [users, setUser] = useState({})
-    let followers = props.followers
+   
 
     useEffect(() => {
         setUser({
@@ -15,8 +15,7 @@ function SuggestionItem(props) {
             username: suggestion.username,
             profile: suggestion.profile,
             account_visiblity: suggestion.account_visiblity,
-            incFollower: () => { },
-            decFollower: () => { },
+            
 
         })
         
@@ -63,7 +62,7 @@ function ScrollButton(props) {
 function VerticalSuggestionItem(props) {
     let suggestion = props.suggestion
     let [users, setUser] = useState({})
-    let followers = props.followers
+    
 
     useEffect(() => {
         setUser({
@@ -71,8 +70,7 @@ function VerticalSuggestionItem(props) {
             username: suggestion.username,
             profile: suggestion.profile,
             account_visiblity: suggestion.account_visiblity,
-            incFollower: () => { },
-            decFollower: () => { },
+            
 
         })
         
@@ -104,7 +102,7 @@ function Suggestion(props) {
     let [leftBtn, setLeftBtn] = useState(false)
     let [rightBtn, setRightBtn] = useState(true)
     let [suggestions, setSuggestions] = useState([])
-    let [followers, setFollowers] = useState([])
+   
     let type = props.type
 
     useEffect(() => {
@@ -118,8 +116,7 @@ function Suggestion(props) {
             if (result.status === 200) {
                 if (result.data.status === 200) {
                     setSuggestions(result.data.suggestions)
-                    
-                    setFollowers(result.data.followers)
+                
                 }
             }
         })
@@ -129,7 +126,7 @@ function Suggestion(props) {
 
             return () => {
                 setSuggestions([])
-                setFollowers([])
+                
             }
 
     }, [])

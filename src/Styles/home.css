@@ -185,7 +185,7 @@
     padding: 5px;
     border-radius: 50%;
     cursor: pointer;
-    users-select: none;
+    user-select: none;
     z-index: 15;
 }
 .suggestions-container-header{
@@ -199,7 +199,7 @@
     padding: 5px;
     border-radius: 5px;
     cursor: pointer;
-    users-select: none;
+    user-select: none;
     
 }
 
@@ -222,7 +222,7 @@
     padding: 5px;
     border-radius: 5px;
     cursor: pointer;
-    users-select: none;
+    user-select: none;
     
 }
 .vertical-suggestion-item{
@@ -288,7 +288,7 @@
     border-bottom: 1px solid #e5e5e5;
     transition: all 0.5s ease-in-out;
 }
-.post-report,.post-delete-post,.post-unfollow-users{
+.post-report,.post-delete-post{
     font-weight: bold;
     color: rgb(0, 69, 133);
     transition: all 0.5s ease-in-out;

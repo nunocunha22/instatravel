@@ -8,7 +8,7 @@ const { sendMail } = require('./sendMail');
 exports.register = function (email, fullname, username, password) {
     return new Promise(function (resolve, reject) {
         var created_ate = new Date().getTime();
-        var sql = "INSERT INTO users(email,username,fullname,user_type,created_date,verification,pswd,profile) VALUES(?,?,?,?,?,?,?,?)";
+        var sql = "INSERT INTO users(email,username,fullname,user_type,created_date,verification,password,profile) VALUES(?,?,?,?,?,?,?,?)";
         mysqlConnection.beginTransaction(function (error) {
             if (error) {
                 mysqlConnection.rollback(function () {
@@ -197,96 +197,7 @@ exports.updateProfile = function (idusers, profile) {
     }).catch((error) => {
         return false
     })
-
-
 }
-
-
-exports.followUser = function (idusers, followingId) {
-    console.log(followingId);
-    return new Promise((resolve, reject) => {
-        var checkQuery = "SELECT * FROM followers WHERE followed_by=? AND followed_to=? limit 1";
-
-        mysqlConnection.query(checkQuery, [idusers, followingId], function (err, result) {
-            if (err) {
-                reject({ "error": "error in checking users", status: 500 });
-            }
-            if (result.length > 0) {
-                let deleteFollowing = "DELETE FROM followers WHERE followed_by=? AND followed_to=?";
-                mysqlConnection.query(deleteFollowing, [idusers, followingId], function (err, result) {
-                    if (err) {
-                        reject({ "error": "error in deleting following", status: 500 });
-                    }
-                    resolve(result);
-                })
-
-                resolve({ "error": "already following", status: 500 });
-            } else {
-                let timestamp = new Date().getTime();
-                let isFollowedRequest = 0;
-                let getUserInfo = "SELECT account_visiblity FROM userinfo WHERE idusers=?";
-                mysqlConnection.query(getUserInfo, [followingId], function (err, result) {
-                    if (err) {
-                        reject({ "error": "error in getting users info", status: 500 });
-                    }
-                    if (result[0].account_visiblity.toLocaleLowerCase() != 'Public'.toLocaleLowerCase()) {
-                        isFollowedRequest = 1;
-                    }
-
-                    var insertQuery = "INSERT INTO followers(followed_by,followed_to,timestamp,isFollowRequest) VALUES(?,?,?,?)";
-                    mysqlConnection.query(insertQuery, [idusers, followingId, timestamp, isFollowedRequest], function (err, result) {
-                        if (err) {
-                            ////console.log)(err);
-                            reject({ "error": "error in following users", status: 500 });
-                        }
-                        resolve(result);
-                    })
-
-                    resolve({ "error": "users is private", status: 500 });
-
-                })
-
-
-
-
-
-            }
-        })
-    }).then((result) => { return true })
-        .catch((error) => {
-            ////console.log)(error);
-            return false
-        })
-
-
-
-
-
-}
-
-exports.isFollowing = function (currentUserId, idusers) {
-
-    return new Promise((resolve, reject) => {
-        var checkQuery = "SELECT * FROM followers WHERE followed_by=? AND followed_to=? limit 1";
-
-        mysqlConnection.query(checkQuery, [currentUserId, idusers], function (err, result) {
-            if (err) {
-                reject({ "error": "error in checking users", status: 500 });
-            }
-            if (result.length > 0) {
-                resolve(true);
-            } else {
-                resolve(false);
-            }
-        })
-    }).then((result) => { return result })
-        .catch((error) => {
-            ////console.log)(error);
-            return false
-        })
-
-}
-
 
 exports.updateUserInfo = function (idusers, userInfo) {
     return new Promise((resolve, reject) => {
@@ -392,8 +303,8 @@ exports.create_new_password = function (email, password, pcode) {
             mysqlConnection.query(getUserInfo, [email], function (err, result) {
                 if (err) reject(false)
                 if (result.length > 0) {
-                    let oldPassword = result[0].pswd;
-                    const query = 'UPDATE users SET pswd=? WHERE email=?';
+                    let oldPassword = result[0].password;
+                    const query = 'UPDATE users SET password=? WHERE email=?';
                     mysqlConnection.query(query, [hashPassword, email], function (err, result) {
                         if (err) reject(false)
                         const query1 = 'UPDATE passwordchanger SET old_password=? WHERE passwordChangeCode=? AND email=?';

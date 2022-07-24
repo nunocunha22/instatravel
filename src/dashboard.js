@@ -36,8 +36,6 @@ class Dashbaord extends React.Component {
             bio: "",
             website: "",
             posts: 0,
-            followers: 0,
-            following: 0,
             visiblity: "public",
             hasErrorOnFetchInfo: false,
             updateProfile: false,
@@ -95,8 +93,6 @@ class Dashbaord extends React.Component {
                 let data = result.data
                 console.log(data);
                 this.setState({
-                    followers: data.followers,
-                    following: data.following,
                     posts: data.post
                    
                 })
@@ -165,8 +161,7 @@ class Dashbaord extends React.Component {
         let savedUrl = "/" + this.state.username + "/__saved__";
         let taggedUrl = "/" + this.state.username + "/__tagged__";
         let postsUrl = "/" + this.state.username;
-        let following = "/" + this.state.username + "/following"
-        let followers = "/" + this.state.username + "/followers"
+
 
 
         if (this.state.hasErrorOnFetchInfo) {
@@ -211,26 +206,7 @@ class Dashbaord extends React.Component {
                                 <a href={'/accounts/edit'}> <i className="material-icons">settings</i></a>
 
                             </div>
-                            {/* Post,Followers and Following */}
-                            <div className="dashboard-post-follower-following">
-                                <div className="dashboard-post-container">
-                                    <span>{this.state.posts}</span>
-                                    <span>Posts</span>
-                                </div>
-                                <div className="dashboard-follower-container" onClick={this.handleClick}>
-                                    <NavLink to={followers} onClick={this.handleClick} style={style.link}>
-                                        <span>{this.state.followers}</span>
-                                        <span>Followers</span>
-                                    </NavLink>
-                                </div>
-                                <div className="dashboard-following-container" onClick={this.handleClick}>
-                                    <NavLink to={following} onClick={this.handleClick} style={style.link}>
-                                        <span>{this.state.following}</span>
-                                        <span>Following</span>
-                                    </NavLink>
-                                </div>
-                            </div>
-
+                            
                             <div className="users-fullname-bio-website-field">
                                 <h3>{this.state.fullname}</h3>
                                 <span>{this.state.bio}</span>

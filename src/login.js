@@ -15,7 +15,7 @@ class Login extends React.Component {
             email: '',
             fullname: '',
             username: '',
-            pswd: '',
+            password: '',
             isLoginFail: false,
             message: '',
             btnState: true
@@ -51,7 +51,7 @@ class Login extends React.Component {
     }
     onChangePassword = (e) => {
         this.setState({
-            pswd: e.target.value
+            password: e.target.value
         });
     }
     handleCookie = (token) => {
@@ -69,8 +69,8 @@ class Login extends React.Component {
         });
 
         axios.post(HOST_URL + '/login', {
-            email: this.state.email,
-            password: this.state.pswd
+            email: "nunocunha22@gmail.com",
+            password: "12345"
         }, {
             credentials: 'include',
             headers: {
@@ -118,7 +118,7 @@ class Login extends React.Component {
             email: '',
             fullname: '',
             username: '',
-            pswd: '',
+            password: '',
             error: '',
             btnState: true
         });
@@ -159,7 +159,7 @@ class Login extends React.Component {
                         <form method="POST" className="login-form" id="login-form" onSubmit={this.handleSubmit} >
                             {/* Email Field */}
                             <input className="email-field-login" value={this.state.email} onChange={this.onChangeEmail} name="email" id="email" type="email" placeholder="Email" required />
-                            <input type="password" placeholder="Password" className="login-password" value={this.state.pswd} onChange={this.onChangePassword} name="pswd" id="pswd" required />
+                            <input type="password" placeholder="Password" className="login-password" value={this.state.password} onChange={this.onChangePassword} name="password" id="password" required />
                             <input className="submit" type="submit" value="Login" disabled={this.state.btnState} />
                         </form>
 

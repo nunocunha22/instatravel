@@ -21,9 +21,7 @@ class OtherUserProfile extends React.Component {
             message: "",
             isLoading: true,
             qusername: this.props.match.params.username,
-            followers: 0,
-            posts: 0,
-            following: 0,
+            posts: 0,           
             idusers: 0,
             username: "",
             fullname: "",
@@ -38,45 +36,6 @@ class OtherUserProfile extends React.Component {
 
         }
     }
-
-    getFollowerAndFollowingCount = () => {
-        axios.get(HOST_URL + '/get_follower_following?idusers=' + this.state.idusers).then(result => {
-            if (result.status === 200) {
-                let data = result.data
-
-                this.setState({
-                    followers: data.followers,
-                    following: data.following,
-                    posts: data.post
-                })
-            } else {
-                this.setState({
-                    hasErrorOnFetchInfo: true
-                })
-            }
-        })
-
-    }
-    incrementFollowers = () => {
-        if (this.state.account_visiblity.toLocaleLowerCase() === 'private') {
-            return
-        }
-        this.setState({
-            followers: this.state.followers + 1
-        })
-    }
-
-    decrementFollowers = () => {
-        if (this.state.account_visiblity.toLocaleLowerCase() === 'private') {
-            return
-        }
-        if (this.state.followers > 0)
-            this.setState({
-                followers: this.state.followers - 1
-            })
-    }
-
-
 
     componentDidMount() {
         document.getElementsByTagName("title")[0].innerHTML = this.state.qusername
@@ -106,8 +65,6 @@ class OtherUserProfile extends React.Component {
                     account_visiblity: res[0].account_visiblity,
                     isLoading: false
                 })
-                this.getFollowerAndFollowingCount()
-                this.getAllFollowingIds()
             }
         }).catch(err => {
             console.log(err);
@@ -155,8 +112,6 @@ class OtherUserProfile extends React.Component {
         let savedUrl = "/" + this.state.username + "/__saved__";
         let taggedUrl = "/" + this.state.username + "/__tagged__";
         let postsUrl = "/" + this.state.username;
-        let followingUrl = "/" + this.state.username + "/following";
-        let followersUrl = "/" + this.state.username + "/followers";
         if (this.state.page_not_found) {
             return <>
                 <h1>Page not found {this.state.qusername}</h1>

@@ -5,52 +5,6 @@ const { func } = require('prop-types');
 const register = require('./register');
 const { resolve } = require('path/posix');
 const { sendMail } = require('./sendMail');
-exports.getFollowerCount = function (idusers) {
-    let val = 0
-    const query = "SELECT COUNT(*) as count FROM followers WHERE followed_to=? AND isFollowRequest=?";
-    return new Promise(function (resolve, reject) {
-        connection.query(query, [parseInt(idusers), val], function (err, result) {
-            if (err) reject(err);
-            try {
-                if (result.length > 0)
-                    resolve(result[0].count)
-            } catch (error) {
-                reject(error)
-            }
-
-
-
-        });
-    }).then(function (result) {
-
-        return result
-    }).catch(function (err) { throw err; })
-
-}
-
-exports.getFollowingCount = function (idusers) {
-    let val = 0
-    const query = "SELECT COUNT(*) as count FROM followers WHERE followed_by=? AND isFollowRequest=?";
-    return new Promise(function (resolve, reject) {
-        connection.query(query, [parseInt(idusers), val], function (err, result) {
-            if (err)
-                reject(err);
-            try {
-                if (result.length > 0)
-                    resolve(result[0].count)
-            } catch (error) {
-                reject(error)
-            }
-
-
-        })
-    }).then(function (result) {
-        return result;
-    }).catch(function (err) {
-        throw err;
-    })
-}
-
 
 exports.changePassword = function (idusers, oldPassword, newPassword, confirmPassword) {
     //console.loguserId, oldPassword, newPassword, confirmPassword);
@@ -68,7 +22,7 @@ exports.changePassword = function (idusers, oldPassword, newPassword, confirmPas
         })
     } else {
         //Check Old Password 
-        const query = "SELECT * FROM users where idusers=? AND pswd=?";
+        const query = "SELECT * FROM users where idusers=? AND password=?";
         //console.loguserId);
         return new Promise(function (resolve, reject) {
             connection.query(query, [parseInt(idusers), md5(oldPassword)], function (err, result) {
@@ -81,7 +35,7 @@ exports.changePassword = function (idusers, oldPassword, newPassword, confirmPas
 
             //Change Password
             if (result.length > 0) {
-                const query = "UPDATE users SET pswd=? WHERE idusers=?";
+                const query = "UPDATE users SET password=? WHERE idusers=?";
                 return new Promise(function (resolve, reject) {
                     connection.query(query, [md5(newPassword), parseInt(idusers)], function (err, result) {
                         if (err)
@@ -120,364 +74,19 @@ exports.changePassword = function (idusers, oldPassword, newPassword, confirmPas
     }
 
 }
-
-
-//get all the followers 
-exports.getFollowers = function (idusers) {
-
-    const query = "SELECT users.username,users.fullname,users.idusers,users.profile FROM users join followers ON users.idusers=followers.followed_by WHERE followed_to=? AND isFollowRequest=?";
-    return new Promise(function (resolve, reject) {
-        connection.query(query, [parseInt(idusers), 0], function (err, result) {
-            if (err)
-                reject(false);
-            resolve(result)
-
-        })
-    }).then(function (result) {
-        return result;
-    }).catch(function (err) {
-        return false
-    })
-}
-
-//get all the following 
-exports.getFollowing = function (idusers) {
-    const query = "SELECT users.username,users.fullname,users.idusers,users.profile FROM users join followers ON users.idusers=followers.followed_to WHERE followed_by=? AND isFollowRequest=?";
-    return new Promise(function (resolve, reject) {
-        connection.query(query, [parseInt(idusers), 0], function (err, result) {
-            if (err)
-                reject(false);
-            resolve(result)
-
-        })
-    }).then(function (result) {
-        return result;
-    }).catch(function (err) {
-        return false
-    })
-}
-
-
-
-//Check the account is private or public 
-exports.getAccountPrivacy = function (idusers) {
-    const query = "SELECT * FROM users WHERE idusers=?";
-    return new Promise(function (resolve, reject) {
-        connection.query(query, [parseInt(idusers)], function (err, result) {
-            if (err)
-                reject(err);
-            resolve(result)
-
-        })
-    }).then(function (result) {
-        return result;
-    }).catch(function (err) {
-        throw err;
-    })
-}
-
-//Check the account is private or public 
-exports.setAccountPrivacy = function (idusers, isPrivate) {
-    const query = "UPDATE users SET isPrivate=? WHERE idusers=?";
-    return new Promise(function (resolve, reject) {
-        connection.query(query, [isPrivate, parseInt(idusers)], function (err, result) {
-            if (err)
-                reject(err);
-            resolve(result)
-
-        })
-    }).then(function (result) {
-        return result;
-    }).catch(function (err) {
-        throw err;
-    })
-}
-
-//Posting a status
-
-
-exports.postStatus = function (idusers, username, tags, files, caption) {
-    let timestamp = new Date().getTime();
-    let postUrl = '/p/' + md5(username + timestamp, 32);
-
-    const query = "INSERT INTO post(idusers,postUrl,timestamp,caption) VALUES(?,?,?,?)";
-    return new Promise(function (resolve, reject) {
-        connection.beginTransaction(function (err) {
-
-            if (err) {
-                //console.logerr);
-                reject({
-                    status: 400,
-                    message: "Error in posting"
-                })
-                return
-            }
-            connection.query(query, [parseInt(idusers), postUrl, timestamp, caption], function (err, result) {
-                if (err) {
-                    //console.logerr);
-                    return connection.rollback(function () {
-                        reject({
-                            status: 400,
-                            message: "Error in posting"
-                        })
-                        return
-                    });
-                }
-                let len = files.length
-                var success = 0
-                let postId = result.insertId
-                let query1 = "INSERT INTO insta_media(postId,mimetype,url) VALUES(?,?,?)"
-                for (let i = 0; i < len; i++) {
-                    connection.query(query1, [
-                        postId,
-                        files[i].mimetype,
-                        files[i].path
-
-                    ], function (err, result) {
-                        if (err) {
-                            //console.logerr);
-                            return connection.rollback(function () {
-                                reject({
-                                    status: 403,
-                                    message: "Error in posting"
-                                })
-                            });
-                        }
-
-
-
-                    });
-                    success = success + 1
-
-                }
-
-                if (success == len) {
-
-                    let query2 = "INSERT into hashtag(postId,value) VALUES(?,?)"
-                    let hashArray = tags.split(',')
-                    let hashLen = hashArray.length
-                    let hashStatus = hashArray && hashArray[0]
-
-                    let hashSuccess = 0
-
-                    if (hashStatus != 'null') {
-
-                        for (let i = 0; i < hashLen; i++) {
-                            connection.query(query2, [
-                                postId,
-                                hashArray[i]
-                            ], function (err, result) {
-                                if (err) {
-                                    //console.logerr);
-                                    return connection.rollback(function () {
-                                        reject({
-                                            status: 403,
-                                            message: "Error in posting"
-
-                                        })
-                                    });
-
-                                }
-                                hashSuccess++
-                                if (hashSuccess == hashLen) {
-                                    connection.commit(function (err) {
-                                        if (err) {
-                                            //console.logerr);
-                                            return connection.rollback(function () {
-                                                reject({
-                                                    status: 403,
-                                                    message: "Error in posting"
-                                                })
-                                            });
-                                        }
-                                        //console.log'success!');
-                                        resolve({
-                                            status: 200,
-                                            message: "Post created successfully",
-                                            url: postUrl
-                                        })
-                                    });
-                                }
-                            });
-                        }
-                    } else {
-                        connection.commit(function (err) {
-                            if (err) {
-                                //console.logerr);
-                                return connection.rollback(function () {
-                                    reject({
-                                        status: 403,
-                                        message: "Error in posting"
-                                    })
-                                });
-                            }
-                            //console.log'success!');
-                            resolve({
-                                status: 200,
-                                message: "Post created successfully",
-                                url: postUrl
-                            })
-                        });
-                    }
-                } else {
-                    connection.rollback(function () {
-                        //console.log'fail!');
-                        reject({
-                            status: 403,
-                            message: "Error in posting"
-
-                        })
-                    });
-                }
-
-
-
-            });
-
-        })
-    }).then(function (result) {
-        return result;
-    }).catch(function (err) {
-        return err;
-    })
-
-
-
-
-}
-
-//get All the following Id
-getAllFollowingIds = function (idusers) {
-    const query = "SELECT users.idusers FROM users join followers ON users.idusers=followers.followed_to WHERE followed_by=? AND isFollowRequest=?";
-    return new Promise(function (resolve, reject) {
-        connection.query(query, [parseInt(idusers), 0], function (err, result) {
-            if (err)
-                reject(err);
-            resolve(result)
-
-        })
-    }).then(function (result) {
-        return result;
-    }).catch(function (err) {
-        throw err;
-    })
-}
-exports.getAllFollowingIds = getAllFollowingIds
-//Transaction in node.js
-exports.getPosts = async function (idusers, offset, limit) {
-    let userIds = await getAllFollowingIds(idusers)
-    let followingIds = []
-    for (const key in userIds) {
-        followingIds.push(userIds[key].idusers)
-    }
-    followingIds.push(idusers)
-    //console.logoffset,limit);
-    const query = `SELECT post.postId,post.postUrl,post.idusers,post.timestamp,post.caption,insta_media.mediaId,insta_media.mimetype,insta_media.url 
-    FROM post INNER JOIN insta_media ON post.postId=insta_media.postId WHERE post.idusers IN (?)  ORDER BY post.timestamp DESC LIMIT ?,?`;
-    return new Promise(function (resolve, reject) {
-        connection.query(query, [followingIds, parseInt(offset), parseInt(limit)], function (err, result) {
-            if (err)
-                reject(err);
-            resolve(result)
-        })
-    }).then(function (result) {
-        return result;
-    }).catch(function (err) {
-        return err;
-    })
-}
-
-
-exports.createGroupChat = function (idusers, users) {
-
-
-}
-exports.createChat = function (idusers, chatWith) {
-    let id = chatWith.idusers
-    let table = 'initconversation'
-    //get the currentTimestamp
-    let timestamp = new Date().getTime()
-    let query = "INSERT into " + table + "(timestamp,senderId,receiverId,isAccept,isIgnore) VALUES(?,?,?,?,?)"
-    let checkQ = "SELECT * from " + table + " where senderId=? AND receiverId=? || senderId=? AND receiverId=?  limit ?"
-    return new Promise(function (resolve, reject) {
-        mysqlConnection.query(checkQ, [
-            idusers,
-            id,
-            id,
-            idusers,
-            1
-        ], (err, result) => {
-            if (err) {
-
-                reject(false);
-            }
-
-            if (result.length == 0) {
-                mysqlConnection.query(query, [timestamp, idusers, id, 0, 0], (err, result) => {
-                    if (err) {
-                        console.log(err);
-                        reject(false);
-                    }
-                    if (result === undefined) {
-                        console.log("Something went's wrong while creating chat");
-                        reject(false)
-                        return
-                    } else {
-                        resolve(result.insertId)
-                    }
-
-                })
-            } else {
-                resolve(chatWith)
-            }
-        })
-
-    }).then((result) => {
-        //console.logresult);
-        return result
-    }).catch((err) => {
-        return false
-    })
-
-}
-
-exports.getAllChatUsers = function (idusers) {
-
-    let query = `
-    SELECT DISTINCT users.idusers,users.username,
-    users.username,users.profile,users.fullname FROM users INNER JOIN 
-         initconversation ON users.idusers=initconversation.senderId || users.idusers=initconversation.receiverId WHERE 
-         users.idusers!=? AND
-         isAccept=1 AND initconversation.receiverId=? || initconversation.senderId=? AND isIgnore=0
-         ORDER BY initconversation.timestamp DESC
-    `
-    return new Promise(function (resolve, reject) {
-        mysqlConnection.query(query, [idusers, idusers, idusers], (err, result) => {
-            if (err) {
-                reject(false);
-            }
-            resolve(result)
-        })
-
-    }).then((result) => {
-
-        return result
-    }).catch((err) => {
-        return false
-    })
-}
+// LIKE POST
 exports.likePost = function (postId, idusers, currentUserId) {
     let table = 'likes'
     return new Promise(function (resolve, reject) {
         mysqlConnection.beginTransaction(function (err) {
             if (err) reject(err)
             let timestamp = new Date().getTime()
-            //Check if the users has already liked the post
+            //Check if the user has already liked the post
             let query1 = "SELECT * FROM " + table + " WHERE postId=? AND liked_by=?"
             mysqlConnection.query(query1, [postId, currentUserId], (err, result) => {
                 if (err) reject(err)
                 if (result.length == 0) {
-                    // if the users has not liked the post
+                    // if the user has not liked the post
                     let query2 = "INSERT INTO " + table + "(postId,liked_by,pc_by,timestamp) VALUES(?,?,?,?)"
                     mysqlConnection.query(query2, [postId, currentUserId, idusers, timestamp], (err, result) => {
                         if (err) reject(err)
@@ -675,111 +284,6 @@ exports.getExplores = async function () {
         .catch((err) => false)
 
 
-
-
-
-}
-const getAllFollowerIds = async function (idusers) {
-    const query = "SELECT users.idusers FROM users join followers ON users.idusers=followers.followed_by WHERE followed_to=? AND isFollowRequest=?";
-    return new Promise(function (resolve, reject) {
-        connection.query(query, [parseInt(idusers), 0], function (err, result) {
-            if (err)
-                reject(err);
-            resolve(result)
-
-        })
-    }).then(function (result) {
-        return result;
-    }).catch(function (err) {
-        throw err;
-    })
-}
-exports.getAllFollowerIds = getAllFollowerIds
-
-
-const getAllUserWhoFollowedByYourFollowingIds = async function (ids, idusers) {
-    let query = "SELECT DISTINCT  u.idusers,u.username,u.profile,u.fullname,ui.account_visiblity FROM users u  INNER JOIN userinfo ui ON ui.idusers=u.idusers INNER JOIN followers  f ON u.idusers=f.followed_by WHERE u.idusers NOT IN (?) AND u.idusers!=?"
-    return new Promise(function (resolve, reject) {
-        connection.query(query, [ids, idusers], function (err, result) {
-            if (err)
-                reject(err);
-
-            resolve(result)
-
-        })
-    }).then(function (result) {
-        return result;
-    }).catch(function (err) {
-        console.log(err);
-        return false
-    })
-}
-exports.getAllUserWhoFollowedByYourFollowingIds = getAllUserWhoFollowedByYourFollowingIds
-
-const getLimitedNewUsers = async function (currentUserId, userIds, limit) {
-    const query = "SELECT users.idusers,users.username,users.fullname,users.profile,ui.account_visiblity FROM users INNER JOIN userinfo ui ON ui.idusers=users.idusers WHERE users.idusers NOT IN (?) AND users.idusers!=? ORDER BY users.created_date DESC LIMIT ?";
-    return new Promise(function (resolve, reject) {
-        connection.query(query, [userIds, currentUserId, limit], function (err, result) {
-            if (err)
-                reject(err);
-            resolve(result)
-
-        })
-    }).then(function (result) {
-        return result;
-    }).catch(function (err) {
-        throw err;
-    })
-}
-exports.getSuggestions = async function (idusers) {
-    //get all the users id which you are  currently following
-    let followingIds = await getAllFollowingIds(idusers)
-    // get all the followers id which are followed by then to you
-    let followerIds = await getAllFollowerIds(idusers)
-    let allIds = []
-    let followers = []
-    for (let i = 0; i < followingIds.length; i++) {
-        allIds.push(followingIds[i].idusers)
-    }
-    for (let index = 0; index < followerIds.length; index++) {
-        followers.push(followerIds[index].idusers)
-
-    }
-    allIds.push(idusers)
-    let suggestedUserInfos = []
-    let userInfos = []
-    //Get the users info of all the users which is not following by you
-    if (followingIds != false) {
-        userInfos = await getAllUserWhoFollowedByYourFollowingIds(allIds, idusers)
-    }
-
-    let newUserInfos = []
-
-
-    // Fetch the new users info which is not following by you
-    if (userInfos != false) {
-        for (let index = 0; index < userInfos.length; index++) {
-            allIds.push(userInfos[index].idusers)
-            suggestedUserInfos.push(userInfos[index])
-        }
-        newUserInfos = await getLimitedNewUsers(idusers, allIds, 7)
-        if (newUserInfos != false) {
-            for (let index = 0; index < newUserInfos.length; index++) {
-                suggestedUserInfos.push(newUserInfos[index])
-            }
-        }
-    } else {
-        newUserInfos = await getLimitedNewUsers(idusers, allIds, 15)
-        if (newUserInfos != false) {
-            for (let index = 0; index < newUserInfos.length; index++) {
-                suggestedUserInfos.push(newUserInfos[index])
-            }
-        }
-
-    }
-
-    return { suggestedUserInfos: suggestedUserInfos, followers: followers }
-
 }
 
 exports.getUserPosts = async function (idusers) {
@@ -796,21 +300,7 @@ exports.getUserPosts = async function (idusers) {
 
 
 }
-exports.isFollowing = async function (idusers, followedBy) {
 
-    return new Promise((resolve, reject) => {
-
-        let query = `SELECT * FROM followers WHERE followed_to=? AND followed_by=? AND isFollowRequest=?`
-        mysqlConnection.query(query, [idusers, followedBy, 0], (err, result) => {
-            if (err) reject(false)
-            console.log(result);
-            resolve(result.length > 0 ? true : false)
-        })
-    }).then((result) => result).catch((err) => false)
-
-
-
-}
 exports.savePost = async function (postId, idusers) {
     return new Promise((resolve, reject) => {
         //Check the post is already saved or not
@@ -1098,23 +588,7 @@ exports.verifyPasswordChangerCode = function (code) {
         return false
     })
 }
-exports.removeFollower = function (followerId, idusers) {
 
-    return new Promise((resolve, reject) => {
-        let query = `DELETE FROM followers WHERE followed_by=? AND followed_to=?`
-        mysqlConnection.query(query, [followerId, idusers], (err, result) => {
-            if (err) reject(false)
-            resolve(true)
-        })
-    }).then((result) => {
-        return result
-    }).catch((err) => {
-        return false
-    })
-
-
-
-}
 exports.getPostCount = function (idusers) {
     let query = `SELECT COUNT(*) as count FROM post WHERE idusers=?`
     return new Promise((resolve, reject) => {
@@ -1248,7 +722,3 @@ exports.deletePost = async function (postId, idusers) {
     }).then((result) => result).catch((err) => false)
 
 }
-
-
-
-
