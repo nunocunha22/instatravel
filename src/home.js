@@ -3,12 +3,11 @@ import Cookies from 'js-cookie';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import PostList from './components/PostList';
-import Suggestion from './components/Suggestions';
 import Toast from './components/Toast';
 import './Styles/home.css';
 import HOST_URL from './proxy';
 
-function PostAndSuggestionListItem(props) {
+/*function PostAndSuggestionListItem(props) {
     let index = props.index
     let idusers = props.idusers
     let post = props.post
@@ -16,7 +15,7 @@ function PostAndSuggestionListItem(props) {
         <Suggestion key={'suggestions' + index} type={'scroll-bar'} />
         <PostList key={index} post={post} idusers={idusers} />
     </>
-}
+}*/
 
 
 function Home(props) {
@@ -158,7 +157,7 @@ function Home(props) {
             <section className="main-home-blank-section">
 
             </section>
-            {/* Post Section */}
+            {/* Post Section 
             <section className="post-stories-section">
 
                 <section className="post-sections">
@@ -183,12 +182,12 @@ function Home(props) {
                 </section>
 
             </section>
-            {/* Suggestion Section */}
+            Suggestion Section 
             <section className="suggestions-section">
                 <div className="suggestion-box">
                     <Suggestion key={'suggestions-1'} type={'vertical-bar'} />
                 </div>
-            </section>
+            </section>*/}
         </div>
 
     </>
